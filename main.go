@@ -21,20 +21,23 @@ type Tree struct {
 	Edges  []Edge
 }
 
-func (t *Tree) Init(N int) {
+func (t *Tree) Init() {
 	// Init tree with null vector
 }
 
-func (t *Tree) Add() {
-	// Add a point
+func (t *Tree) Sprout(edgeIdx int, pointIdx int) {
+	// Find out the current edge number
+	edgeNo := len(Edges)
+
+	// Select the edge we sprout on
+	sproutEdge := t.Edges[edgeIdx]
+
+	newEdge1 := Edge{}
+	newEdge2
 }
 
-func (t *Tree) Remove() {
+func (t *Tree) Restore() {
 	// Removes a RPoint and any extra SPoints created
-}
-
-func (t *Tree) Move() {
-	// Puts the Rpoint another place in the tree by attaching its Steiner point somewhere else
 }
 
 func main() {
