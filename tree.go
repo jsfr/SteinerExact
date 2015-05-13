@@ -32,12 +32,11 @@ func (t *Tree) Init(points []Point) {
 	edges = []Edge{e0, e1, e2}
 
 	t.N = n
-	t.Points = append(t.Points, s)
+	t.Points = append(points, s)
 	t.Edges = edges
 }
 
 func (t *Tree) Sprout(edgeIdx, p2 int) {
-
 	// Select the edge we split. Use a pointer for easy editing
 	e0 := &t.Edges[edgeIdx]
 
@@ -81,7 +80,6 @@ func (t *Tree) Restore(edgeIdx int) {
 	// Remove Steiner point and last two edges
 	t.Points = t.Points[:len(t.Points)-1]
 	t.Edges = t.Edges[:idx-2]
-
 }
 
 func (t *Tree) GetPertubedCentroid(idx0, idx1, idx2 int) Point {
