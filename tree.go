@@ -21,7 +21,7 @@ func (t *Tree) Init(points []Point) {
 		panic("Too few points to initialize.")
 	}
 
-	s := t.GetPertubedCentroid(0, 1, 2)
+	s := t.PertubedCentroid(0, 1, 2)
 
 	e0 := Edge{0, n + 1}
 	e1 := Edge{1, n + 1}
@@ -45,7 +45,7 @@ func (t *Tree) Sprout(edgeIdx, p2 int) {
 	p1 := e0.P1
 
 	// Get the new Steiner point and its number, and append to point list
-	s := t.GetPertubedCentroid(p0, p1, p2)
+	s := t.PertubedCentroid(p0, p1, p2)
 	sIdx := len(t.Points)
 	t.Points = append(t.Points, s)
 
@@ -70,7 +70,7 @@ func (t *Tree) Restore(edgeIdx int) {
 	e2 := &t.Edges[edgeIdx]
 
 	if e0.P1 != e1.P1 || e1.P1 != e2.P1 || e2.P1 != e0.P1 {
-		panic("The edges does not go to the same Steiner point")
+		panic("The edges do not go to the same Steiner point")
 	}
 
 	// Restore edge
@@ -82,14 +82,14 @@ func (t *Tree) Restore(edgeIdx int) {
 	t.Edges = t.Edges[:idx-2]
 }
 
-func (t *Tree) GetPertubedCentroid(idx0, idx1, idx2 int) Point {
+func (t *Tree) PertubedCentroid(idx0, idx1, idx2 int) Point {
 	p0 := t.Points[idx0]
 	p1 := t.Points[idx1]
 	p2 := t.Points[idx2]
-	p := make(Point, len(p0))
-	for i := range p {
-		p[i] = (p0[i]+p1[i]+p2[i])/3.0 +
+	s := make(Point, len(p0))
+	for i := range s {
+		s[i] = (p0[i]+p1[i]+p2[i])/3.0 +
 			0.001*rand.Float64()
 	}
-	return p
+	return s
 }
