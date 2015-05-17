@@ -1,24 +1,41 @@
 package main
 
+import "fmt"
+
 func main() {
 	cfg := InitConfig()
 	tree := cfg.ParseTree()
+	topvec := []int{0}
+	maxPoints := 2*tree.N - 2
 
-	sprouter := func(t Tree, idx int, done chan bool) {
-		t.Sprout(idx)
-		t.Print()
-		done <- true
-	}
+	tree.Print()
 
-	chans := make([]chan bool, len(tree.Edges))
+	for {
+		fmt.Println(topvec)
+		edgeIdx := topvec[len(topvec)-1]
 
-	for i := 0; i < len(tree.Edges); i++ {
-		ch := make(chan bool)
-		chans[i] = ch
-		go sprouter(tree, i, chans[i])
-	}
+		tree.Sprout(edgeIdx)
 
-	for _, ch := range chans {
-		_ = <-ch
+		tree.Print()
+
+		if len(tree.Points) < maxPoints {
+			topvec = append(topvec, 0)
+		} else { // pop all points being 2i
+			for i := len(topvec); i > 0; i-- {
+				tree.Restore(topvec[i-1])
+				if topvec[i-1] >= 2*i {
+					// remove element
+					topvec = topvec[:i-1]
+				} else {
+					// increment element and break
+					topvec[i-1] = topvec[i-1] + 1
+					break
+				}
+			}
+			if len(topvec) == 0 {
+				// if topvec is empty break as we have done all
+				break
+			}
+		}
 	}
 }
