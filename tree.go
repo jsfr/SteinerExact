@@ -1,50 +1,63 @@
 package main
 
-import "math/rand"
+import (
+	"fmt"
+	"math/rand"
+)
 
-// A tree. This contains all N regular points, as the first N entries, and all
-// N-2 Steiner points, as the N+1..2N-2 entries. The topology is then defined by
-// the edges.
+/**
+ * A tree. This contains all N regular points, as the first N entries, and all
+ * N-2 Steiner points, as the N+1..2N-2 entries. The topology is then defined by
+ * the edges.
+ */
 type Tree struct {
 	N      int
 	Points []Point
 	Edges  []Edge
 }
 
-// Initializes the tree represented by the null-vector the given points must
-// contain at least 3 points, and all given points are considered as regular
-// points. Thus the number of regular points N is set to the number of points
-// passed as an argument.
+/**
+ * Initializes the tree represented by the null-vector the given points must
+ * contain at least 3 points, and all given points are considered as regular
+ * points. Thus the number of regular points N is set to the number of points
+ * passed as an argument.
+ */
 func (t *Tree) Init(points []Point) {
 	n := len(points)
 	if n < 3 {
 		panic("Too few points to initialize.")
 	}
 
+	t.N = n
+	t.Points = make([]Point, 0, 2*t.N-2)
+	t.Points = append(t.Points, points...)
+
 	s := t.PertubedCentroid(0, 1, 2)
 
-	e0 := Edge{0, n + 1}
-	e1 := Edge{1, n + 1}
-	e2 := Edge{2, n + 1}
+	e0 := Edge{0, n}
+	e1 := Edge{1, n}
+	e2 := Edge{2, n}
 
 	// there are n+k-1 edges = n+(n-2)-1 = 2n-3
-	edges := make([]Edge, 3, 2*t.N-3)
-	edges = []Edge{e0, e1, e2}
+	edges := make([]Edge, 0, 2*t.N-3)
+	edges = append(edges, e0, e1, e2)
 
-	t.N = n
-	t.Points = append(points, s)
+	t.Points = append(t.Points, s)
 	t.Edges = edges
 }
 
-func (t *Tree) Sprout(edgeIdx, p2 int) {
-	// Select the edge we split. Use a pointer for easy editing
-	e0 := &t.Edges[edgeIdx]
+func (t *Tree) Sprout(edgeIdx int) {
+	if len(t.Points) >= 2*t.N-2 {
+		panic("A FST cannot contain any more Steiner points")
+	}
 
 	// Select the terminals
-	p0 := e0.P0
-	p1 := e0.P1
+	p0 := t.Edges[edgeIdx].P0
+	p1 := t.Edges[edgeIdx].P1
+	p2 := 2 + len(t.Points) - t.N // The next terminal we need to connect
 
-	// Get the new Steiner point and its number, and append to point list
+	// Get the new Steiner point and its number,
+	// and append it to the point list
 	s := t.PertubedCentroid(p0, p1, p2)
 	sIdx := len(t.Points)
 	t.Points = append(t.Points, s)
@@ -56,17 +69,22 @@ func (t *Tree) Sprout(edgeIdx, p2 int) {
 	t.Edges = append(t.Edges, e2)
 
 	// Change the end points of the original edge
+	e0 := &t.Edges[edgeIdx] // Should be defined AFTER append is used
 	e0.P0 = p2
 	e0.P1 = sIdx
 }
 
 func (t *Tree) Restore(edgeIdx int) {
+	if len(t.Edges) < 5 {
+		panic("There are not enough edges to remove two and keep the original three")
+	}
+
 	idx := len(t.Edges)
 
 	// Get the edges we need to remove (e0, e1)
 	// and the edge we need to restore (e2)
-	e0 := t.Edges[idx-1]
-	e1 := t.Edges[idx-2]
+	e0 := t.Edges[idx-2]
+	e1 := t.Edges[idx-1]
 	e2 := &t.Edges[edgeIdx]
 
 	if e0.P1 != e1.P1 || e1.P1 != e2.P1 || e2.P1 != e0.P1 {
@@ -92,4 +110,24 @@ func (t *Tree) PertubedCentroid(idx0, idx1, idx2 int) Point {
 			0.001*rand.Float64()
 	}
 	return s
+}
+
+func (t *Tree) Print() {
+	fmt.Println("")
+	fmt.Println("###### BEGIN TREE ######")
+	fmt.Println("### Edges ###")
+	fmt.Println(t.Edges)
+	fmt.Println("")
+	fmt.Println("### Terminals ###")
+	for _, p := range t.Points[:t.N] {
+		fmt.Println(p)
+	}
+	fmt.Println("")
+	fmt.Println("### Steiner points ###")
+	for _, p := range t.Points[t.N:] {
+		fmt.Println(p)
+	}
+	fmt.Println("")
+	fmt.Println("###### END TREE ######")
+	fmt.Println("")
 }
