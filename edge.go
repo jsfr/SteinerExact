@@ -10,8 +10,8 @@ type Edge struct {
 }
 
 func (e *Edge) Length(t *Tree) float64 {
-	p0 := t.Points[e.P0]
-	p1 := t.Points[e.P1]
+	p0 := t.Points()[e.P0]
+	p1 := t.Points()[e.P1]
 
 	dist := 0.0
 	for i := range p0 {

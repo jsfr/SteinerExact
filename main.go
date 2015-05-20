@@ -4,9 +4,9 @@ import "fmt"
 
 func main() {
 	cfg := InitConfig()
-	tree := cfg.ParseTree()
+	tree := InitTree(cfg.Points)
 	topvec := []int{0}
-	maxPoints := 2*tree.N - 2
+	maxPoints := 2*tree.N() - 2
 
 	tree.Print()
 
@@ -18,7 +18,7 @@ func main() {
 
 		tree.Print()
 
-		if len(tree.Points) < maxPoints {
+		if len(tree.Points()) < maxPoints {
 			topvec = append(topvec, 0)
 		} else { // pop all points being 2i
 			for i := len(topvec); i > 0; i-- {
