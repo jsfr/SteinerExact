@@ -1,22 +1,28 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+
+	"bitbucket.org/jsfrv/smt-algorithm/smt"
+)
 
 func main() {
-	cfg := InitConfig()
-	tree := InitTree(cfg.Points)
+	cfg := smt.InitConfig()
+	tree := smt.InitTree(&cfg.Points)
 	topvec := []int{0}
 	maxPoints := 2*tree.N() - 2
-
-	tree.Print()
+	w := bufio.NewWriter(os.Stdout)
 
 	for {
-		fmt.Println(topvec)
+		fmt.Fprintln(w, "### topvec:", topvec)
+
 		edgeIdx := topvec[len(topvec)-1]
 
 		tree.Sprout(edgeIdx)
 
-		tree.Print()
+		tree.Print(w)
 
 		if len(tree.Points()) < maxPoints {
 			topvec = append(topvec, 0)

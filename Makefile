@@ -1,7 +1,7 @@
 all: build
 
-build: main.go edge.go point.go tree.go cli.go
-	go build -race .
+build: main.go
+	go build -race main.go
 
 clean:
 	go clean

@@ -2,6 +2,7 @@
 !.gitignore
 !examples
 !examples/*.json
+!smt
 !*.go
 !*Makefile
 !*README.md

@@ -1,4 +1,4 @@
-package main
+package smt
 
 import (
 	"encoding/json"
