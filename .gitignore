@@ -1,0 +1,6 @@
+*
+!.gitignore
+!examples/*.json
+!*.go
+!*Makefile
+!*README.md
