@@ -1,5 +1,6 @@
 *
 !.gitignore
+!examples
 !examples/*.json
 !*.go
 !*Makefile
