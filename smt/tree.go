@@ -191,22 +191,13 @@ func (t *Tree) Print(w *bufio.Writer) {
 
 func (t *Tree) Error() float64 {
 	return 0.0
+	// TODO
 }
 
 func (t *Tree) Length() float64 {
 	var length float64 = 0
-	ch := make(chan float64, len(t.edges))
-	worker := func(e Edge) {
-		ch <- e.Length()
-	}
-
 	for _, e := range t.edges {
-		go worker(e)
+		length = length + e.Length()
 	}
-
-	for range t.edges {
-		length = length + <-ch
-	}
-
 	return length
 }
