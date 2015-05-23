@@ -14,10 +14,11 @@ import (
  * as a 3-element array
  */
 type Tree struct {
-	n      int
-	dim    int
-	points []Point
-	edges  []Edge
+	n           int
+	dim         int
+	points      []Point
+	edges       []Edge
+	adjacencies map[int]*[3]int
 }
 
 func (t *Tree) N() int {
@@ -101,6 +102,9 @@ func InitTree(points *[]Point) Tree {
 	t.edges = make([]Edge, 0, 2*t.n-3)
 	t.edges = append(t.edges, e0, e1, e2)
 
+	t.adjacencies = make(map[int]*[3]int)
+	t.adjacencies[t.n] = &[3]int{0, 1, 2}
+
 	return t
 }
 
@@ -121,14 +125,35 @@ func (t *Tree) Sprout(edgeIdx int) {
 	t.points = append(t.points, s)
 
 	// Create the new edges and append them to the edge list
-	e1 := InitEdge(t, p0, sIdx)
-	e2 := InitEdge(t, p1, sIdx)
+	e0 := InitEdge(t, p0, sIdx)
+	e1 := InitEdge(t, p1, sIdx)
+	t.edges = append(t.edges, e0)
 	t.edges = append(t.edges, e1)
-	t.edges = append(t.edges, e2)
 
 	// Change the end points of the original edge
-	e0 := &t.edges[edgeIdx] // Should be defined AFTER append is used
-	e0.UpdateEdge(t, p2, sIdx)
+	e2 := &t.edges[edgeIdx] // Should be defined AFTER append is used
+	e2.UpdateEdge(t, p2, sIdx)
+
+	idx := len(t.edges)
+
+	// assign new adjacencies
+	t.adjacencies[sIdx] = &[3]int{edgeIdx, idx - 2, idx - 1}
+
+	// update adjacencies if any of the other points were Steiner points
+	if p0 >= t.n {
+		for i, e := range t.adjacencies[p0] {
+			if e == edgeIdx {
+				t.adjacencies[p0][i] = idx - 2
+			}
+		}
+	}
+	if p1 >= t.n {
+		for i, e := range t.adjacencies[p1] {
+			if e == edgeIdx {
+				t.adjacencies[p1][i] = idx - 1
+			}
+		}
+	}
 }
 
 func (t *Tree) Restore(edgeIdx int) {
@@ -144,16 +169,39 @@ func (t *Tree) Restore(edgeIdx int) {
 	e1 := t.edges[idx-1]
 	e2 := &t.edges[edgeIdx]
 
-	if e0.P1() != e1.P1() || e1.P1() != e2.P1() || e2.P1() != e0.P1() {
+	s := e2.P1()
+	p0 := e0.P0()
+	p1 := e1.P0()
+
+	if s != e0.P1() || s != e1.P1() {
 		panic("The edges do not go to the same Steiner point")
 	}
 
 	// Restore edge
-	e2.UpdateEdge(t, e0.P0(), e1.P0())
+	e2.UpdateEdge(t, p0, p1)
 
 	// Remove Steiner point and last two edges
 	t.points = t.points[:len(t.points)-1]
 	t.edges = t.edges[:idx-2]
+
+	// Delete adjacencies for the removed Steiner points
+	delete(t.adjacencies, s)
+
+	// Update adjacencies if any of the other points are Steiner points
+	if p0 >= t.n {
+		for i, e := range t.adjacencies[p0] {
+			if e == idx-2 {
+				t.adjacencies[p0][i] = edgeIdx
+			}
+		}
+	}
+	if p1 >= t.n {
+		for i, e := range t.adjacencies[p1] {
+			if e == idx-1 {
+				t.adjacencies[p1][i] = edgeIdx
+			}
+		}
+	}
 }
 
 func (t *Tree) PertubedCentroid(idx0, idx1, idx2 int) Point {
@@ -183,16 +231,26 @@ func (t *Tree) Print(w *bufio.Writer) {
 	for i, p := range t.SteinerPoints() {
 		fmt.Fprintln(w, t.N()+i, ":", p)
 	}
+	fmt.Fprint(w, "\n### Adjacencies ###\n")
+	for i, a := range t.adjacencies {
+		fmt.Fprintln(w, i, ":", *a)
+	}
 	fmt.Fprint(w,
 		"\n### Length ###\n", t.Length(),
 		"\n###### END TREE ######\n\n")
 	w.Flush()
 }
 
-func (t *Tree) Error() float64 {
-	return 0.0
-	// TODO
-}
+/*func (t *Tree) Error() float64 {
+	var error float64 = 0
+	for i := t.n; i < len(t.points); i++ {
+		for _, e := range t.adjacencies[i] {
+
+		}
+	}
+
+	return error
+}*/
 
 func (t *Tree) Length() float64 {
 	var length float64 = 0
