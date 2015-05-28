@@ -22,7 +22,7 @@ func main() {
 
 		tree.Sprout(edgeIdx)
 
-		tree.Print(w)
+		tree.DebugPrint(w)
 
 		if len(tree.Points()) < maxPoints {
 			topvec = append(topvec, 0)

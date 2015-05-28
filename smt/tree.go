@@ -216,7 +216,7 @@ func (t *Tree) PertubedCentroid(idx0, idx1, idx2 int) Point {
 	return s
 }
 
-func (t *Tree) Print(w *bufio.Writer) {
+func (t *Tree) DebugPrint(w *bufio.Writer) {
 	fmt.Fprint(w,
 		"###### BEGIN TREE ######",
 		"\n### Edges ###\n")
@@ -235,22 +235,48 @@ func (t *Tree) Print(w *bufio.Writer) {
 	for i, a := range t.adjacencies {
 		fmt.Fprintln(w, i, ":", *a)
 	}
+	fmt.Fprint(w, "\n### Error ###\n", t.Error())
 	fmt.Fprint(w,
-		"\n### Length ###\n", t.Length(),
+		"\n\n### Length ###\n", t.Length(),
 		"\n###### END TREE ######\n\n")
 	w.Flush()
 }
 
-/*func (t *Tree) Error() float64 {
-	var error float64 = 0
-	for i := t.n; i < len(t.points); i++ {
-		for _, e := range t.adjacencies[i] {
-
+/**
+ * TODO This should be optimized as we do a lot of for's by
+ * doing each subtract and product on its own.
+ */
+func (t *Tree) Error() float64 {
+	pos := func(x float64) float64 {
+		switch {
+		case x > 0:
+			return x
+		default:
+			return 0
 		}
 	}
 
+	var error float64 = 0
+	for _, adj := range t.adjacencies {
+		e0 := t.edges[adj[0]]
+		e1 := t.edges[adj[1]]
+		e2 := t.edges[adj[2]]
+
+		l01 := e0.Length() * e1.Length()
+		l12 := e1.Length() * e2.Length()
+		l20 := e2.Length() * e0.Length()
+
+		v0 := t.points[e0.P0()].Subtract(&t.points[e0.P1()])
+		v1 := t.points[e1.P0()].Subtract(&t.points[e1.P1()])
+		v2 := t.points[e2.P0()].Subtract(&t.points[e2.P1()])
+
+		error = error +
+			pos(l01+l01+v0.Product(&v1)) +
+			pos(l12+l12+v1.Product(&v2)) +
+			pos(l20+l20+v2.Product(&v0))
+	}
 	return error
-}*/
+}
 
 func (t *Tree) Length() float64 {
 	var length float64 = 0
