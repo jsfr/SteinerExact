@@ -2,15 +2,54 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
+	"runtime"
 
 	"bitbucket.org/jsfrv/smt-algorithm/smt"
 )
 
+type config struct {
+	points []smt.Point
+	procs  int
+}
+
+func initConfig() config {
+	c := config{}
+
+	// Specifiy any flags here
+	procs := flag.Int("procs", 0, "Sets GOMAXPROCS. "+
+		"Should be set to the number of processor one has.")
+	flag.Parse()
+
+	path := flag.Arg(0)
+
+	file, err := os.Open(path)
+
+	if err != nil {
+		panic("Error parsing file: " + err.Error())
+	}
+
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&c)
+
+	if err != nil {
+		panic("Error decoding file: " + err.Error())
+	}
+
+	c.procs = *procs
+
+	return c
+}
+
 func main() {
-	cfg := smt.InitConfig()
-	tree := smt.InitTree(&cfg.Points)
+	cfg := initConfig()
+	if cfg.procs > 0 {
+		runtime.GOMAXPROCS(cfg.procs)
+	}
+	tree := smt.InitTree(&cfg.points)
 	topvec := []int{0}
 	maxPoints := 2*tree.N() - 2
 	w := bufio.NewWriter(os.Stdout)
