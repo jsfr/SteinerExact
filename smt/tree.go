@@ -74,7 +74,7 @@ func (t *Tree) SteinerPoints() []Point {
  * passed as an argument.
  */
 func InitTree(points *[]Point) Tree {
-	t := Tree{}
+	var t Tree
 	t.n = len(*points)
 	if t.n < 3 {
 		panic("Too few points to initialize.")

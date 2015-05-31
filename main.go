@@ -13,15 +13,16 @@ import (
 
 type config struct {
 	points []smt.Point
-	procs  int
+	procs  bool
 }
 
 func initConfig() config {
 	c := config{}
 
 	// Specifiy any flags here
-	procs := flag.Int("procs", 0, "Sets GOMAXPROCS. "+
-		"Should be set to the number of processor one has.")
+	procs := flag.Bool("procs", false, "Sets GOMAXPROCS to the number of"+
+		" CPUs available. Otherwise it will be set"+
+		" to the default which is 1")
 	flag.Parse()
 
 	path := flag.Arg(0)
@@ -46,8 +47,8 @@ func initConfig() config {
 
 func main() {
 	cfg := initConfig()
-	if cfg.procs > 0 {
-		runtime.GOMAXPROCS(cfg.procs)
+	if cfg.procs {
+		runtime.GOMAXPROCS(runtime.NumCPU())
 	}
 	tree := smt.InitTree(&cfg.points)
 	topvec := []int{0}
