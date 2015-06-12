@@ -140,8 +140,7 @@ func optimize(tree *smt.Tree) {
 					r = tree.Error()
 				}
 				if q < STUB || STUB < 0 {
-					fmt.Println("topvec: ", topvec)
-					smt.DebugTree(w, tree)
+					smt.PrintTree(w, tree, topvec)
 					STUB = q
 				}
 			}
@@ -150,21 +149,39 @@ func optimize(tree *smt.Tree) {
 		if len(tree.Points()) < maxPoints {
 			topvec = append(topvec, 0)
 		} else { // pop all points being 2i
-			for i := len(topvec); i > 0; i-- {
-				tree.Restore(topvec[i-1])
-				if topvec[i-1] >= 2*i {
+			for i := len(topvec) - 1; i >= 0; i-- {
+				tree.Restore(topvec[i])
+				if topvec[i] >= 2*(i+1) {
 					// remove element
-					topvec = topvec[:i-1]
+					topvec = topvec[:i]
 				} else {
 					// increment element and break
-					topvec[i-1] = topvec[i-1] + 1
+					topvec[i]++
 					break
 				}
 			}
-			if len(topvec) == 0 {
-				// if topvec is empty break as we have done all
-				break
-			}
 		}
+
+		if len(topvec) == 0 {
+			// if topvec is empty break as we have done all
+			break
+		}
+
+		// else {
+		// 	for {
+		// 		i := len(topvec)
+		// 		if i == 0 {
+		// 			break
+		// 		}
+		// 		a := topvec[i-1]
+		// 		tree.Restore(a)
+		// 		topvec[i-1]++
+		// 		if topvec[i-1] >= 2*i {
+		// 			topvec = topvec[:i-1]
+		// 		} else {
+		// 			break
+		// 		}
+		// 	}
+		// }
 	}
 }

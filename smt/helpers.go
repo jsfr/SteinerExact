@@ -39,6 +39,28 @@ func AdjacentPoints(sIdx int, t *Tree) (pIdx [3]int) {
 	return
 }
 
+func PrintTree(w *bufio.Writer, t *Tree, topvec []int) {
+	fmt.Fprint(w,
+		"=============== BEGIN TREE ===============",
+		"\n### Topology Vector ###\n",
+		topvec,
+		"\n\n### Edges ###\n")
+	for i, e := range t.edges {
+		fmt.Fprintf(w, "(%v, %v), ", e.P0(), e.P1())
+		if (i+1)%5 == 0 {
+			fmt.Fprint(w, "\n")
+		}
+	}
+	fmt.Fprint(w, "\n\n### Steiner points ###\n")
+	for i, p := range t.points[t.n:] {
+		fmt.Fprintln(w, t.n+i, ":", p)
+	}
+	fmt.Fprint(w, "\n### Error ###\t\t### Length ###\n",
+		t.Error(), "\t", t.Length(),
+		"\n=============== END TREE ===============\n\n")
+	w.Flush()
+}
+
 func DebugTree(w *bufio.Writer, t *Tree) {
 	fmt.Fprint(w,
 		"###### BEGIN TREE ######",
