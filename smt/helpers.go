@@ -18,9 +18,6 @@ func PertubedCentroid(idx0, idx1, idx2 int, t *Tree) (centroid Point) {
 	return
 }
 
-/**
- * Analytically finds the Fermat-Torricelli point of the three specified points.
- */
 func FermatTorricelliPoint(idx [3]int, t *Tree) Point {
 	// TODO
 	return nil
@@ -46,44 +43,49 @@ func PrintTree(w *bufio.Writer, t *Tree, topvec []int) {
 		topvec,
 		"\n\n### Edges ###\n")
 	for i, e := range t.edges {
-		fmt.Fprintf(w, "(%v, %v), ", e.P0(), e.P1())
-		if (i+1)%5 == 0 {
+		fmt.Fprintf(w, "(%2v %2v), ", e.P0(), e.P1())
+		if (i+1)%4 == 0 {
 			fmt.Fprint(w, "\n")
 		}
 	}
 	fmt.Fprint(w, "\n\n### Steiner points ###\n")
 	for i, p := range t.points[t.n:] {
-		fmt.Fprintln(w, t.n+i, ":", p)
+		fmt.Fprintf(w, "%v : [", t.n+i)
+		for _, x := range p {
+			fmt.Fprintf(w, "%10.10f ", x)
+		}
+		fmt.Fprint(w, "\b]\n")
 	}
-	fmt.Fprint(w, "\n### Error ###\t\t### Length ###\n",
-		t.Error(), "\t", t.Length(),
-		"\n=============== END TREE ===============\n\n")
+	fmt.Fprintf(w, "\n### Error ###\t\t### Length ###\n"+
+		"%10.10f\t\t%10.10f"+
+		"\n=============== END TREE ===============\n\n",
+		t.Error(), t.Length())
 	w.Flush()
 }
 
-func DebugTree(w *bufio.Writer, t *Tree) {
-	fmt.Fprint(w,
-		"###### BEGIN TREE ######",
-		"\n### Edges ###\n")
-	for i, e := range t.edges {
-		e.SetLength()
-		fmt.Fprintln(w, i, ":", e)
-	}
-	fmt.Fprint(w, "\n\n### Terminals ###\n")
-	for i, p := range t.points[:t.n] {
-		fmt.Fprintln(w, i, ":", p)
-	}
-	fmt.Fprint(w, "\n### Steiner points ###\n")
-	for i, p := range t.points[t.n:] {
-		fmt.Fprintln(w, t.n+i, ":", p)
-	}
-	fmt.Fprint(w, "\n### Adjacencies ###\n")
-	for i, a := range t.adjacencies {
-		fmt.Fprintln(w, i, ":", *a)
-	}
-	fmt.Fprint(w, "\n### Error ###\n", t.Error())
-	fmt.Fprint(w,
-		"\n\n### Length ###\n", t.Length(),
-		"\n###### END TREE ######\n\n")
-	w.Flush()
-}
+// func DebugTree(w *bufio.Writer, t *Tree) {
+// 	fmt.Fprint(w,
+// 		"###### BEGIN TREE ######",
+// 		"\n### Edges ###\n")
+// 	for i, e := range t.edges {
+// 		e.SetLength()
+// 		fmt.Fprintln(w, i, ":", e)
+// 	}
+// 	fmt.Fprint(w, "\n\n### Terminals ###\n")
+// 	for i, p := range t.points[:t.n] {
+// 		fmt.Fprintln(w, i, ":", p)
+// 	}
+// 	fmt.Fprint(w, "\n### Steiner points ###\n")
+// 	for i, p := range t.points[t.n:] {
+// 		fmt.Fprintln(w, t.n+i, ":", p)
+// 	}
+// 	fmt.Fprint(w, "\n### Adjacencies ###\n")
+// 	for i, a := range t.adjacencies {
+// 		fmt.Fprintln(w, i, ":", *a)
+// 	}
+// 	fmt.Fprint(w, "\n### Error ###\n", t.Error())
+// 	fmt.Fprint(w,
+// 		"\n\n### Length ###\n", t.Length(),
+// 		"\n###### END TREE ######\n\n")
+// 	w.Flush()
+// }
