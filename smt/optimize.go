@@ -1,12 +1,10 @@
 package smt
 
-/**
- * This runs a single of iteration as proposed by Smith.
- * TODO: This implementation is more or less shamelessly copied from
- * Smiths implementation. If there is time, it would be nice to try implementing
- * the gaussian elimination better, and possibly using goroutines. E.g. we could
- * have a routine for each dimension as these are actually separate.
- */
+// SmithsIteration runs a single of iteration as proposed by Smith.
+// TODO: This implementation is more or less shamelessly copied from
+// Smiths implementation. If there is time, it would be nice to try implementing
+// the gaussian elimination better, and possibly using goroutines. E.g. we could
+// have a routine for each dimension as these are actually separate.
 func (t *Tree) SmithsIteration() {
 	// Set up equations t.points[t.n+i][] = sum_{j}( B[i][j] * t.points[j][] ) + C[i]
 
@@ -48,17 +46,12 @@ func (t *Tree) SmithsIteration() {
 				}
 			}
 		}
-		// fmt.Println(C)
 
 		if val[sIdx] <= 1 {
 			leafQ[lqp] = sIdx
 			lqp++
 		}
 	}
-
-	// debug := 0
-	// debug++
-	// fmt.Printf("%v: %v\n%v\n%v\n\n", debug, t.points, C, B)
 
 	// Eliminate leaves
 	for lqp > 1 {
@@ -99,35 +92,26 @@ func (t *Tree) SmithsIteration() {
 			panic("No neighbor found")
 		}
 
-		// fmt.Println("B,C:", B, C)
 		q1 := B[j][l]
 		B[j][l] = 0
 		c := 1 / (1 - q0*q1)
 
-		// fmt.Println("B,C:", B, C)
 		for i := range B[j] {
 			B[j][i] = c * B[j][i]
 		}
-		// fmt.Println("B,C:", B, C)
+
 		for i := range C[j] {
 			C[j][i] = c * (C[j][i] + q1*C[sIdx][i])
 		}
-		// fmt.Println("B,C:", B, C)
-	}
 
-	// debug++
-	// fmt.Printf("%v: %v\n%v\n%v\n\n", debug, t.points, C, B)
+	}
 
 	// Solve 1-vertex tree
 	i := leafQ[0]
-	// fmt.Println("leafQ[0]:", i)
 	t.points[i] = C[i]
 	for _, j := range t.adjacencies[i] {
 		t.edges[j].UnsetLength()
 	}
-
-	// debug++
-	// fmt.Printf("%v: %v\n%v\n%v\n\n", debug, t.points, C, B)
 
 	// Backsolve
 	for eqp > 0 {
@@ -154,15 +138,11 @@ func (t *Tree) SmithsIteration() {
 			}
 		}
 	}
-
-	// debug++
-	// fmt.Printf("%v: %v\n%v\n%v\n\n", debug, t.points, C, B)
 }
 
-/**
- * This runs a single simple iteration where all points a updated one at a time
- * where each point is calculated using the analytical solution
- */
+// SimpleIteration runs a single simple iteration where all points a updated one
+// at a time. Each Steiner point is calculated by finding the Fermat-Torricelli
+// point.
 func (t *Tree) SimpleIteration() {
 	for sIdx, eIdx := range t.adjacencies {
 		pIdx := AdjacentPoints(sIdx, t)
