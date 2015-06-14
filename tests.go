@@ -24,7 +24,7 @@ func listAllTopologies(tree *smt.Tree) {
 		} else { // pop all points being 2i
 			for i := len(topvec) - 1; i >= 0; i-- {
 				tree.Restore(topvec[i])
-				if topvec[i] >= 2*(i+1) {
+ 				if topvec[i] >= 2*(i+1) {
 					// remove element
 					topvec = topvec[:i]
 				} else {

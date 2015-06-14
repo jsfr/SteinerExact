@@ -36,21 +36,28 @@ func AdjacentPoints(sIdx int, t *Tree) (pIdx [3]int) {
 	return
 }
 
-func PrintTree(w *bufio.Writer, t *Tree, topvec []int) {
+func PrintTree(w *bufio.Writer, t *Tree, topvec []int, offset int) {
 	fmt.Fprint(w,
 		"=============== BEGIN TREE ===============",
-		"\n### Topology Vector ###\n",
-		topvec,
-		"\n\n### Edges ###\n")
+		"\n### Topology Vector ###\n[")
+	for _, x := range topvec {
+		fmt.Fprintf(w, "%v ", x+offset)
+	}
+	fmt.Fprint(w, "\b]\n\n### Edges ###\n")
 	for i, e := range t.edges {
-		fmt.Fprintf(w, "(%2v %2v), ", e.P0(), e.P1())
+		fmt.Fprintf(w, "(%2v %2v)", e.p0+offset, e.p1+offset)
+		if i+1 == len(t.edges) {
+			fmt.Fprint(w, "\n\n")
+		} else {
+			fmt.Fprint(w, ", ")
+		}
 		if (i+1)%4 == 0 {
 			fmt.Fprint(w, "\n")
 		}
 	}
-	fmt.Fprint(w, "\n\n### Steiner points ###\n")
+	fmt.Fprint(w, "\n### Steiner points ###\n")
 	for i, p := range t.points[t.n:] {
-		fmt.Fprintf(w, "%v : [", t.n+i)
+		fmt.Fprintf(w, "%v : [", t.n+i+offset)
 		for _, x := range p {
 			fmt.Fprintf(w, "%10.10f ", x)
 		}
@@ -62,30 +69,3 @@ func PrintTree(w *bufio.Writer, t *Tree, topvec []int) {
 		t.Error(), t.Length())
 	w.Flush()
 }
-
-// func DebugTree(w *bufio.Writer, t *Tree) {
-// 	fmt.Fprint(w,
-// 		"###### BEGIN TREE ######",
-// 		"\n### Edges ###\n")
-// 	for i, e := range t.edges {
-// 		e.SetLength()
-// 		fmt.Fprintln(w, i, ":", e)
-// 	}
-// 	fmt.Fprint(w, "\n\n### Terminals ###\n")
-// 	for i, p := range t.points[:t.n] {
-// 		fmt.Fprintln(w, i, ":", p)
-// 	}
-// 	fmt.Fprint(w, "\n### Steiner points ###\n")
-// 	for i, p := range t.points[t.n:] {
-// 		fmt.Fprintln(w, t.n+i, ":", p)
-// 	}
-// 	fmt.Fprint(w, "\n### Adjacencies ###\n")
-// 	for i, a := range t.adjacencies {
-// 		fmt.Fprintln(w, i, ":", *a)
-// 	}
-// 	fmt.Fprint(w, "\n### Error ###\n", t.Error())
-// 	fmt.Fprint(w,
-// 		"\n\n### Length ###\n", t.Length(),
-// 		"\n###### END TREE ######\n\n")
-// 	w.Flush()
-// }

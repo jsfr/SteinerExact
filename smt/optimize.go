@@ -8,14 +8,11 @@ package smt
 func (t *Tree) SmithsIteration() {
 	// Set up equations t.points[t.n+i][] = sum_{j}( B[i][j] * t.points[j][] ) + C[i]
 
-	k := len(t.points[t.n:]) // number of steiner points
 	B := make(map[int][]float64)
 	C := make(map[int][]float64)
 	val := make(map[int]int)
-	leafQ := make(map[int]int, k)
-	eqnStack := make(map[int]int, k)
-	lqp := 0
-	eqp := 0
+	leafQ := stack{}
+	eqnStack := stack{}
 
 	// Prepare equations
 	for sIdx, eIdx := range t.adjacencies {
@@ -48,20 +45,17 @@ func (t *Tree) SmithsIteration() {
 		}
 
 		if val[sIdx] <= 1 {
-			leafQ[lqp] = sIdx
-			lqp++
+			leafQ.Put(sIdx)
 		}
 	}
 
 	// Eliminate leaves
-	for lqp > 1 {
-		lqp--
-		sIdx := leafQ[lqp]
+	for leafQ.Length() > 1 {
+		sIdx := leafQ.Pop()
 		val[sIdx]--
 		pIdx := AdjacentPoints(sIdx, t)
 
-		eqnStack[eqp] = sIdx
-		eqp++
+		eqnStack.Put(sIdx)
 
 		j := -1
 		for i := range B[sIdx] {
@@ -77,8 +71,7 @@ func (t *Tree) SmithsIteration() {
 		j = pIdx[j]
 		val[j]--
 		if val[j] == 1 {
-			leafQ[lqp] = j
-			lqp++ // New leaf?
+			leafQ.Put(j) // New leaf?
 		}
 
 		pIdx2 := AdjacentPoints(j, t)
@@ -114,9 +107,8 @@ func (t *Tree) SmithsIteration() {
 	}
 
 	// Backsolve
-	for eqp > 0 {
-		eqp--
-		i = eqnStack[eqp]
+	for eqnStack.Length() > 0 {
+		i = eqnStack.Pop()
 		l := -1
 		for j := range B[i] {
 			if B[i][j] != 0 {

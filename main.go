@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"flag"
+	"math"
 	"os"
 	"runtime"
 
@@ -13,19 +14,18 @@ import (
 type config struct {
 	Points []smt.Point
 	Procs  bool
+	Offset int
 }
 
 func main() {
-	cfg := initConfig()
-	if cfg.Procs {
+	c := initConfig()
+	if c.Procs {
 		runtime.GOMAXPROCS(runtime.NumCPU())
 	}
 
-	tree := smt.InitTree(&cfg.Points)
+	t := smt.InitTree(&c.Points)
 
-	// listAllTopologies(tree)
-	// testOptimize(tree)
-	optimize(tree)
+	optimize(t, c.Offset)
 }
 
 func initConfig() config {
@@ -35,6 +35,7 @@ func initConfig() config {
 	procs := flag.Bool("procs", false, "Sets GOMAXPROCS to the number of"+
 		" CPUs available. Otherwise it will be set"+
 		" to the default which is 1")
+	offset := flag.Int("offset", 0, "Offset on indices of points, edges etc.")
 	flag.Parse()
 
 	path := flag.Arg(0)
@@ -53,48 +54,49 @@ func initConfig() config {
 	}
 
 	c.Procs = *procs
+	c.Offset = *offset
 
 	return c
 }
 
-func optimize(tree *smt.Tree) {
+func optimize(t *smt.Tree, offset int) {
 	w := bufio.NewWriter(os.Stdout)
-	maxPoints := 2*tree.N() - 2
+	maxPoints := 2*t.N() - 2
 	topvec := []int{0}
-	STUB := -1.0
+	upperBound := math.Inf(1)
 
 	for {
 		edgeIdx := topvec[len(topvec)-1]
-		tree.Sprout(edgeIdx)
+		t.Sprout(edgeIdx)
 
-		q := tree.Length()
-		r := tree.Error()
+		q := t.Length()
+		r := t.Error()
 
-		if q-r < STUB || STUB < 0 {
+		if q-r < upperBound {
 			for r > 0.005*q {
-				tree.SmithsIteration()
-				q = tree.Length()
-				r = tree.Error()
+				t.SmithsIteration()
+				q = t.Length()
+				r = t.Error()
 			}
 
-			if len(tree.Points()) >= maxPoints {
+			if len(t.Points()) >= maxPoints {
 				for r > 0.0001*q {
-					tree.SmithsIteration()
-					q = tree.Length()
-					r = tree.Error()
+					t.SmithsIteration()
+					q = t.Length()
+					r = t.Error()
 				}
-				if q < STUB || STUB < 0 {
-					smt.PrintTree(w, tree, topvec)
-					STUB = q
+				if q < upperBound {
+					smt.PrintTree(w, t, topvec, offset)
+					upperBound = q
 				}
 			}
 		}
 
-		if len(tree.Points()) < maxPoints && (q-r < STUB || STUB < 0) {
+		if len(t.Points()) < maxPoints && (q-r < upperBound) {
 			topvec = append(topvec, 0)
 		} else { // pop all points being 2i
 			for i := len(topvec) - 1; i >= 0; i-- {
-				tree.Restore(topvec[i])
+				t.Restore(topvec[i])
 				if topvec[i] >= 2*(i+1) {
 					// remove element
 					topvec = topvec[:i]
