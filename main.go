@@ -12,30 +12,36 @@ import (
 )
 
 type config struct {
-	Points []smt.Point
-	Procs  bool
-	Offset int
+	Points     []smt.Point
+	MaxThreads bool
+	Offset     bool
 }
 
 func main() {
 	c := initConfig()
-	if c.Procs {
+	if c.MaxThreads {
 		runtime.GOMAXPROCS(runtime.NumCPU())
 	}
 
 	t := smt.InitTree(&c.Points)
 
-	optimize(t, c.Offset)
+	offset := 0
+	if c.Offset {
+		offset = 1
+	}
+
+	optimize(t, offset)
 }
 
 func initConfig() config {
 	c := config{}
 
 	// Specifiy any flags here
-	procs := flag.Bool("procs", false, "Sets GOMAXPROCS to the number of"+
-		" CPUs available. Otherwise it will be set"+
-		" to the default which is 1")
-	offset := flag.Int("offset", 0, "Offset on indices of points, edges etc.")
+	maxThreads := flag.Bool("maxThreads", false,
+		"Sets GOMAXPROCS to the number of CPUs available."+
+			" Otherwise it will be set to the default which is 1")
+	offset := flag.Bool("1", false,
+		"If enabled will 1-index printed points, topology vectors etc.")
 	flag.Parse()
 
 	path := flag.Arg(0)
@@ -53,7 +59,7 @@ func initConfig() config {
 		panic("Error decoding file: " + err.Error())
 	}
 
-	c.Procs = *procs
+	c.MaxThreads = *maxThreads
 	c.Offset = *offset
 
 	return c
@@ -61,27 +67,29 @@ func initConfig() config {
 
 func optimize(t *smt.Tree, offset int) {
 	w := bufio.NewWriter(os.Stdout)
-	maxPoints := 2*t.N() - 2
 	topvec := []int{0}
 	upperBound := math.Inf(1)
+	maxPoints := 2*t.N() - 2
 
 	for {
-		edgeIdx := topvec[len(topvec)-1]
-		t.Sprout(edgeIdx)
-
+		i := len(topvec) - 1
+		t.Sprout(topvec[i])
 		q := t.Length()
 		r := t.Error()
 
 		if q-r < upperBound {
-			for r > 0.005*q {
-				t.SmithsIteration()
+			for r > 0.05*q {
+				t.SimpleIteration()
+				// t.SmithsIteration()
 				q = t.Length()
 				r = t.Error()
+				smt.PrintTree(w, t, topvec, offset)
 			}
 
 			if len(t.Points()) >= maxPoints {
-				for r > 0.0001*q {
-					t.SmithsIteration()
+				for r > 0.05*q {
+					t.SimpleIteration()
+					// t.SmithsIteration()
 					q = t.Length()
 					r = t.Error()
 				}
@@ -90,27 +98,38 @@ func optimize(t *smt.Tree, offset int) {
 					upperBound = q
 				}
 			}
-		}
-
-		if len(t.Points()) < maxPoints && (q-r < upperBound) {
-			topvec = append(topvec, 0)
-		} else { // pop all points being 2i
-			for i := len(topvec) - 1; i >= 0; i-- {
+		} else {
+			if topvec[i] < 2*(i+1) {
 				t.Restore(topvec[i])
-				if topvec[i] >= 2*(i+1) {
-					// remove element
-					topvec = topvec[:i]
-				} else {
-					// increment element and break
-					topvec[i]++
-					break
-				}
+				topvec[i]++
+				continue
 			}
 		}
 
+		topvec = nextTopvec(t, topvec)
 		if len(topvec) == 0 {
-			// if topvec is empty break as we have done all
-			break
+			os.Exit(0)
 		}
 	}
+}
+
+func nextTopvec(t *smt.Tree, topvec []int) []int {
+	maxPoints := 2*t.N() - 2
+	if len(t.Points()) < maxPoints {
+		topvec = append(topvec, 0)
+	} else {
+		// pop all points being 2i
+		for i := len(topvec) - 1; i >= 0; i-- {
+			t.Restore(topvec[i])
+			if topvec[i] < 2*(i+1) {
+				// increment element and break
+				topvec[i]++
+				break
+			} else {
+				// remove element
+				topvec = topvec[:i]
+			}
+		}
+	}
+	return topvec
 }

@@ -4,13 +4,11 @@ import (
 	"math"
 )
 
-/**
- * A tree. This contains all N regular points, as the first N entries, and all
- * N-2 Steiner points, as the N+1..2N-2 entries. The topology is then defined by
- * the edges. To easily find the edges ending at a Steiner point, the indices of
- * all edges having Steiner point i as a end point are stored in adjacencies[i]
- * as a 3-element array
- */
+// Tree is defined as the following: It contains all N regular points, as the
+// first N entries, and all N-2 Steiner points, as the N+1..2N-2 entries. The
+// topology is then defined by the edges. To easily find the edges ending at a
+// Steiner point, the indices of all edges having Steiner point i as a end point
+// are stored in adjacencies[i] as a 3-element array
 type Tree struct {
 	n           int
 	dim         int
@@ -19,14 +17,18 @@ type Tree struct {
 	adjacencies map[int]*[3]int
 }
 
+// N is a getter for t.n
 func (t *Tree) N() int {
 	return t.n
 }
 
+// Dim is a getter for t.dim
 func (t *Tree) Dim() int {
 	return t.dim
 }
 
+// Points is a getter for t.points. This creates a copy of the list of points to
+// avoid outside meddling.
 func (t *Tree) Points() []Point {
 	points := make([]Point, len(t.points))
 	n := copy(points, t.points)
@@ -36,6 +38,8 @@ func (t *Tree) Points() []Point {
 	return points
 }
 
+// Edges is a getter for t.edges. This creates a copy of the list of edges to
+// avoid outside meddling.
 func (t *Tree) Edges() []Edge {
 	edges := make([]Edge, len(t.edges))
 	n := copy(edges, t.edges)
@@ -45,6 +49,7 @@ func (t *Tree) Edges() []Edge {
 	return edges
 }
 
+// Terminals works like Points, but only returns the terminal points.
 func (t *Tree) Terminals() []Point {
 	terminals := t.points[:t.n]
 	points := make([]Point, len(terminals))
@@ -55,6 +60,7 @@ func (t *Tree) Terminals() []Point {
 	return points
 }
 
+// SteinerPoints works like Points, but only returns the Steiner points.
 func (t *Tree) SteinerPoints() []Point {
 	steiner := t.points[t.n:]
 	points := make([]Point, len(steiner))
@@ -65,12 +71,10 @@ func (t *Tree) SteinerPoints() []Point {
 	return points
 }
 
-/**
- * Initializes the tree represented by the null-vector the given points must
- * contain at least 3 points, and all given points are considered as regular
- * points. Thus the number of regular points N is set to the number of points
- * passed as an argument.
- */
+// InitTree initializes the tree represented by the null-vector the given points
+// must contain at least 3 points, and all given points are considered as
+// regular points. Thus the number of regular points N is set to the number of
+// points passed as an argument.
 func InitTree(points *[]Point) *Tree {
 	var t Tree
 	t.n = len(*points)
@@ -89,7 +93,7 @@ func InitTree(points *[]Point) *Tree {
 
 	t.points = make([]Point, 0, 2*t.n-2)
 	t.points = append(t.points, *points...)
-	s := PertubedCentroid(0, 1, 2, &t)
+	s := pertubedCentroid(0, 1, 2, &t)
 	t.points = append(t.points, s)
 
 	e0 := InitEdge(&t, 0, t.n)
@@ -106,6 +110,12 @@ func InitTree(points *[]Point) *Tree {
 	return &t
 }
 
+// Sprout grows the tree by the next unconnected terminal. The connection is
+// made on the edge at t.edges[edgeIdx]. After the sprouting two new edges are
+// placed at the back of the edge list. These go from the points of the edge
+// sprouted on to the new Steiner point. On the same time the old edge is
+// replaced with one going from the new Steiner point to the newly connected
+// terminal.
 func (t *Tree) Sprout(edgeIdx int) {
 	if len(t.points) >= 2*t.n-2 {
 		panic("A FST cannot contain any more Steiner points")
@@ -118,7 +128,7 @@ func (t *Tree) Sprout(edgeIdx int) {
 
 	// Get the new Steiner point and its number,
 	// and append it to the point list
-	s := PertubedCentroid(p0, p1, p2, t)
+	s := pertubedCentroid(p0, p1, p2, t)
 	sIdx := len(t.points)
 	t.points = append(t.points, s)
 
@@ -156,6 +166,8 @@ func (t *Tree) Sprout(edgeIdx int) {
 	}
 }
 
+// Restore undoes the work done by Sprout. The function assumes that the edge
+// t.edges[edgeIdx] is the latest sprouted.
 func (t *Tree) Restore(edgeIdx int) {
 	if len(t.edges) < 5 {
 		panic("There are not enough edges to remove two and keep the original three")
@@ -206,10 +218,8 @@ func (t *Tree) Restore(edgeIdx int) {
 	}
 }
 
-/**
- * TODO This should be optimized as we do a lot of for's by
- * doing each subtract and product on its own.
- */
+// Error calculates the error of the tree. The error is as described in the
+// article by Smith. Only angles greater than 120 degrees should affect it.
 func (t *Tree) Error() float64 {
 	ch := make(chan float64)
 	pos := func(x float64) float64 {
@@ -227,7 +237,7 @@ func (t *Tree) Error() float64 {
 		l12 := e1.Length() * e2.Length()
 		l20 := e2.Length() * e0.Length()
 
-		pIdx := AdjacentPoints(sIdx, t)
+		pIdx := adjacentPoints(sIdx, t)
 
 		v0 := t.points[pIdx[0]].Subtract(&t.points[sIdx])
 		v1 := t.points[pIdx[1]].Subtract(&t.points[sIdx])
@@ -242,7 +252,7 @@ func (t *Tree) Error() float64 {
 			pos(2*p20+l20)
 	}
 
-	var error float64 = 0
+	var error float64
 	for sIdx, adj := range t.adjacencies {
 		go calc(sIdx, adj)
 	}
@@ -252,8 +262,10 @@ func (t *Tree) Error() float64 {
 	return math.Sqrt(error)
 }
 
+// Length calculates the length of the entire tree by summing the length of all
+// its edges.
 func (t *Tree) Length() float64 {
-	var length float64 = 0
+	var length float64
 	for _, e := range t.edges {
 		length = length + e.Length()
 	}

@@ -4,7 +4,7 @@ package smt
 // TODO: This implementation is more or less shamelessly copied from
 // Smiths implementation. If there is time, it would be nice to try implementing
 // the gaussian elimination better, and possibly using goroutines. E.g. we could
-// have a routine for each dimension as these are actually separate.
+// have a goroutine for each dimension as these are actually separate.
 func (t *Tree) SmithsIteration() {
 	// Set up equations t.points[t.n+i][] = sum_{j}( B[i][j] * t.points[j][] ) + C[i]
 
@@ -16,8 +16,8 @@ func (t *Tree) SmithsIteration() {
 
 	// Prepare equations
 	for sIdx, eIdx := range t.adjacencies {
-		epsilon := 0.0001 * t.Error() / float64(t.n)
-		pIdx := AdjacentPoints(sIdx, t)
+		epsilon := 1e-4 * t.Error() / float64(t.n)
+		pIdx := adjacentPoints(sIdx, t)
 		q := [3]float64{
 			1 / (t.edges[eIdx[0]].Length() + epsilon),
 			1 / (t.edges[eIdx[1]].Length() + epsilon),
@@ -53,7 +53,7 @@ func (t *Tree) SmithsIteration() {
 	for leafQ.Length() > 1 {
 		sIdx := leafQ.Pop()
 		val[sIdx]--
-		pIdx := AdjacentPoints(sIdx, t)
+		pIdx := adjacentPoints(sIdx, t)
 
 		eqnStack.Put(sIdx)
 
@@ -74,7 +74,7 @@ func (t *Tree) SmithsIteration() {
 			leafQ.Put(j) // New leaf?
 		}
 
-		pIdx2 := AdjacentPoints(j, t)
+		pIdx2 := adjacentPoints(j, t)
 		l := -1
 		for i := range pIdx2 {
 			if pIdx2[i] == sIdx {
@@ -121,7 +121,7 @@ func (t *Tree) SmithsIteration() {
 		}
 
 		q0 := B[i][l]
-		pIdx3 := AdjacentPoints(i, t)
+		pIdx3 := adjacentPoints(i, t)
 		l = pIdx3[l]
 		for j := range t.points[i] {
 			t.points[i][j] = C[i][j] + q0*t.points[l][j]
@@ -137,8 +137,8 @@ func (t *Tree) SmithsIteration() {
 // point.
 func (t *Tree) SimpleIteration() {
 	for sIdx, eIdx := range t.adjacencies {
-		pIdx := AdjacentPoints(sIdx, t)
-		t.points[sIdx] = FermatTorricelliPoint(pIdx, t)
+		pIdx := adjacentPoints(sIdx, t)
+		t.points[sIdx] = fermatTorricelliPoint(sIdx, pIdx, t)
 		for _, i := range eIdx {
 			t.edges[i].UnsetLength()
 		}

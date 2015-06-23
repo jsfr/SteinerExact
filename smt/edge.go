@@ -58,10 +58,6 @@ func (e *Edge) UnsetLength() {
 func (e *Edge) SetLength() {
 	p0 := e.t.points[e.p0]
 	p1 := e.t.points[e.p1]
-	dist := 0.0
-	for i := range p0 {
-		diff := p0[i] - p1[i]
-		dist = dist + (diff * diff)
-	}
+	dist := squaredDistance(p0, p1)
 	e.length = math.Sqrt(dist)
 }
