@@ -46,9 +46,11 @@ func testOptimize(tree *smt.Tree) {
 	w := bufio.NewWriter(os.Stdout)
 	tree.Sprout(2)
 	smt.PrintTree(w, tree, []int{2}, 0)
+	eps := 1e-4 * tree.Error() / float64(tree.N())
 
 	for i := 0; i < 10000; i++ {
-		tree.SmithsIteration()
+		tree.SmithsIteration(eps)
+		eps = 1e-4 * tree.Error() / float64(tree.N())
 	}
 	smt.PrintTree(w, tree, []int{2}, 0)
 }

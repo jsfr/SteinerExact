@@ -1,8 +1,6 @@
 package smt
 
-import (
-	"math"
-)
+import "math"
 
 // Tree is defined as the following: It contains all N regular points, as the
 // first N entries, and all N-2 Steiner points, as the N+1..2N-2 entries. The

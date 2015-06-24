@@ -18,6 +18,7 @@ type config struct {
 	MaxThreads bool
 	Offset     bool
 	CPUProfile string
+	SortPoints bool
 }
 
 func main() {
@@ -41,6 +42,10 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
+	if c.SortPoints {
+		c.Points.SortPoints()
+	}
+
 	t := smt.InitTree(&c.Points)
 	optimize(t, offset)
 }
@@ -55,6 +60,10 @@ func initConfig() config {
 	offset := flag.Bool("1", false,
 		"If enabled will 1-index printed points, topology vectors etc.")
 	cpuprofile := flag.String("pprof", "", "write cpu profile to file")
+	sort := flag.Bool("sort", false, "if set the terminals will be sorted "+
+		" such that each conescutive pair of "+
+		"terminals have the maximum distance to each other.")
+
 	flag.Parse()
 
 	path := flag.Arg(0)
@@ -75,6 +84,7 @@ func initConfig() config {
 	c.MaxThreads = *maxThreads
 	c.Offset = *offset
 	c.CPUProfile = *cpuprofile
+	c.SortPoints = *sort
 
 	return c
 }
@@ -83,10 +93,11 @@ func optimize(t *smt.Tree, offset int) {
 	w := bufio.NewWriter(os.Stdout)
 	topvec := make([]int, t.N()-2)
 	upperBound := math.Inf(1)
-	stack := make([]int, 100)
-	len := make([]float64, 100)
+	stack := make([]int, t.N()*t.N())
+	len := make([]float64, 2*t.N())
 	k := 1
 	m := 0
+
 	for {
 		nc := 0
 		for x := 0; x < 2*k+1 && k <= t.N()-3; x++ {
@@ -94,19 +105,22 @@ func optimize(t *smt.Tree, offset int) {
 			t.Sprout(x)
 			q := t.Length()
 			r := t.Error()
+			eps := 1e-4 * r / float64(t.N())
 
 			if q-r < upperBound {
-				for r > 0.005*q {
-					t.SmithsIteration()
+				for r > 5e-3*q {
+					t.SmithsIteration(eps)
 					q = t.Length()
 					r = t.Error()
+					eps = 1e-4 * r / float64(t.N())
 				}
 
 				if k >= t.N()-3 {
-					for r > 0.0001*q {
-						t.SmithsIteration()
+					for r > 1e-4*q {
+						t.SmithsIteration(eps)
 						q = t.Length()
 						r = t.Error()
+						eps = 1e-4 * r / float64(t.N())
 					}
 					if q < upperBound {
 						smt.PrintTree(w, t, topvec, offset)

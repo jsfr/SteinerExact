@@ -95,6 +95,14 @@ func PrintTree(w *bufio.Writer, t *Tree, topvec []int, offset int) {
 			fmt.Fprint(w, "\n")
 		}
 	}
+	fmt.Fprint(w, "\n### Terminals ###\n")
+	for i, p := range t.points[:t.n] {
+		fmt.Fprintf(w, "%v : [", t.n+i+offset)
+		for _, x := range p {
+			fmt.Fprintf(w, "%10.10f ", x)
+		}
+		fmt.Fprint(w, "\b]\n")
+	}
 	fmt.Fprint(w, "\n### Steiner points ###\n")
 	for i, p := range t.points[t.n:] {
 		fmt.Fprintf(w, "%v : [", t.n+i+offset)

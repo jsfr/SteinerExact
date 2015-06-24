@@ -5,7 +5,7 @@ package smt
 // Smiths implementation. If there is time, it would be nice to try implementing
 // the gaussian elimination better, and possibly using goroutines. E.g. we could
 // have a goroutine for each dimension as these are actually separate.
-func (t *Tree) SmithsIteration() {
+func (t *Tree) SmithsIteration(epsilon float64) {
 	// Set up equations t.points[t.n+i][] = sum_{j}( B[i][j] * t.points[j][] ) + C[i]
 
 	B := make(map[int][]float64)
@@ -16,7 +16,6 @@ func (t *Tree) SmithsIteration() {
 
 	// Prepare equations
 	for sIdx, eIdx := range t.adjacencies {
-		epsilon := 1e-4 * t.Error() / float64(t.n)
 		pIdx := adjacentPoints(sIdx, t)
 		q := [3]float64{
 			1 / (t.edges[eIdx[0]].Length() + epsilon),
