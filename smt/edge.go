@@ -12,6 +12,9 @@ type Edge struct {
 	t      *Tree
 }
 
+// Edges is just a list of edges
+type Edges []Edge
+
 // P0 returns the index of the first point.
 func (e *Edge) P0() int {
 	return e.p0

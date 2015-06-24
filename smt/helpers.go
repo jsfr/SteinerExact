@@ -22,7 +22,7 @@ func pertubedCentroid(idx0, idx1, idx2 int, t *Tree) (centroid Point) {
 func fermatTorricelliPoint(sIdx int, pIdx [3]int, t *Tree) Point {
 	steinerPoint := make(Point, t.dim)
 
-	p := make([]Point, 3)
+	p := make(Points, 3)
 	for i := range pIdx {
 		p[i] = t.points[pIdx[i]]
 	}

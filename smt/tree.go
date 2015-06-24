@@ -12,8 +12,8 @@ import (
 type Tree struct {
 	n           int
 	dim         int
-	points      []Point
-	edges       []Edge
+	points      Points
+	edges       Edges
 	adjacencies map[int]*[3]int
 }
 
@@ -29,8 +29,8 @@ func (t *Tree) Dim() int {
 
 // Points is a getter for t.points. This creates a copy of the list of points to
 // avoid outside meddling.
-func (t *Tree) Points() []Point {
-	points := make([]Point, len(t.points))
+func (t *Tree) Points() Points {
+	points := make(Points, len(t.points))
 	n := copy(points, t.points)
 	if n != len(t.points) {
 		panic("Not all points were copied.")
@@ -40,8 +40,8 @@ func (t *Tree) Points() []Point {
 
 // Edges is a getter for t.edges. This creates a copy of the list of edges to
 // avoid outside meddling.
-func (t *Tree) Edges() []Edge {
-	edges := make([]Edge, len(t.edges))
+func (t *Tree) Edges() Edges {
+	edges := make(Edges, len(t.edges))
 	n := copy(edges, t.edges)
 	if n != len(t.edges) {
 		panic("Not all edges were copied.")
@@ -50,9 +50,9 @@ func (t *Tree) Edges() []Edge {
 }
 
 // Terminals works like Points, but only returns the terminal points.
-func (t *Tree) Terminals() []Point {
+func (t *Tree) Terminals() Points {
 	terminals := t.points[:t.n]
-	points := make([]Point, len(terminals))
+	points := make(Points, len(terminals))
 	n := copy(points, terminals)
 	if n != len(terminals) {
 		panic("Not all terminals were copied.")
@@ -61,9 +61,9 @@ func (t *Tree) Terminals() []Point {
 }
 
 // SteinerPoints works like Points, but only returns the Steiner points.
-func (t *Tree) SteinerPoints() []Point {
+func (t *Tree) SteinerPoints() Points {
 	steiner := t.points[t.n:]
-	points := make([]Point, len(steiner))
+	points := make(Points, len(steiner))
 	n := copy(points, steiner)
 	if n != len(steiner) {
 		panic("Not all Steiner points were copied.")
@@ -75,7 +75,7 @@ func (t *Tree) SteinerPoints() []Point {
 // must contain at least 3 points, and all given points are considered as
 // regular points. Thus the number of regular points N is set to the number of
 // points passed as an argument.
-func InitTree(points *[]Point) *Tree {
+func InitTree(points *Points) *Tree {
 	var t Tree
 	t.n = len(*points)
 	if t.n < 3 {
@@ -91,7 +91,7 @@ func InitTree(points *[]Point) *Tree {
 		}
 	}
 
-	t.points = make([]Point, 0, 2*t.n-2)
+	t.points = make(Points, 0, 2*t.n-2)
 	t.points = append(t.points, *points...)
 	s := pertubedCentroid(0, 1, 2, &t)
 	t.points = append(t.points, s)
@@ -101,7 +101,7 @@ func InitTree(points *[]Point) *Tree {
 	e2 := InitEdge(&t, 2, t.n)
 
 	// there are n+k-1 edges = n+(n-2)-1 = 2n-3
-	t.edges = make([]Edge, 0, 2*t.n-3)
+	t.edges = make(Edges, 0, 2*t.n-3)
 	t.edges = append(t.edges, e0, e1, e2)
 
 	t.adjacencies = make(map[int]*[3]int)
@@ -221,14 +221,15 @@ func (t *Tree) Restore(edgeIdx int) {
 // Error calculates the error of the tree. The error is as described in the
 // article by Smith. Only angles greater than 120 degrees should affect it.
 func (t *Tree) Error() float64 {
-	ch := make(chan float64)
 	pos := func(x float64) float64 {
 		if x > 0 {
 			return x
 		}
 		return 0
 	}
-	calc := func(sIdx int, adj *[3]int) {
+
+	var error float64
+	for sIdx, adj := range t.adjacencies {
 		e0 := t.edges[adj[0]]
 		e1 := t.edges[adj[1]]
 		e2 := t.edges[adj[2]]
@@ -239,25 +240,18 @@ func (t *Tree) Error() float64 {
 
 		pIdx := adjacentPoints(sIdx, t)
 
-		v0 := t.points[pIdx[0]].Subtract(&t.points[sIdx])
-		v1 := t.points[pIdx[1]].Subtract(&t.points[sIdx])
-		v2 := t.points[pIdx[2]].Subtract(&t.points[sIdx])
+		v0 := t.points[pIdx[0]].Subtract(t.points[sIdx])
+		v1 := t.points[pIdx[1]].Subtract(t.points[sIdx])
+		v2 := t.points[pIdx[2]].Subtract(t.points[sIdx])
 
-		p01 := v0.Product(&v1)
-		p12 := v1.Product(&v2)
-		p20 := v2.Product(&v0)
+		p01 := DotProduct(v0, v1)
+		p12 := DotProduct(v1, v2)
+		p20 := DotProduct(v2, v0)
 
-		ch <- pos(2*p01+l01) +
+		error = error +
+			pos(2*p01+l01) +
 			pos(2*p12+l12) +
 			pos(2*p20+l20)
-	}
-
-	var error float64
-	for sIdx, adj := range t.adjacencies {
-		go calc(sIdx, adj)
-	}
-	for _ = range t.adjacencies {
-		error = error + <-ch
 	}
 	return math.Sqrt(error)
 }
