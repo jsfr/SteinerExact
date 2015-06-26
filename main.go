@@ -2,8 +2,6 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
-	"flag"
 	"log"
 	"math"
 	"os"
@@ -12,14 +10,6 @@ import (
 
 	"bitbucket.org/jsfrv/smt-algorithm/smt"
 )
-
-type config struct {
-	Points     smt.Points
-	MaxThreads bool
-	Offset     bool
-	CPUProfile string
-	SortPoints bool
-}
 
 func main() {
 	c := initConfig()
@@ -47,49 +37,11 @@ func main() {
 	}
 
 	t := smt.InitTree(&c.Points)
-	optimize(t, offset)
+
+	optimize(t, offset, c.Iteration)
 }
 
-func initConfig() config {
-	c := config{}
-
-	// Specifiy any flags here
-	maxThreads := flag.Bool("maxThreads", false,
-		"Sets GOMAXPROCS to the number of CPUs available."+
-			" Otherwise it will be set to the default which is 1")
-	offset := flag.Bool("1", false,
-		"If enabled will 1-index printed points, topology vectors etc.")
-	cpuprofile := flag.String("pprof", "", "write cpu profile to file")
-	sort := flag.Bool("sort", false, "if set the terminals will be sorted "+
-		" such that each conescutive pair of "+
-		"terminals have the maximum distance to each other.")
-
-	flag.Parse()
-
-	path := flag.Arg(0)
-
-	file, err := os.Open(path)
-
-	if err != nil {
-		panic("Error parsing file: " + err.Error())
-	}
-
-	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&c)
-
-	if err != nil {
-		panic("Error decoding file: " + err.Error())
-	}
-
-	c.MaxThreads = *maxThreads
-	c.Offset = *offset
-	c.CPUProfile = *cpuprofile
-	c.SortPoints = *sort
-
-	return c
-}
-
-func optimize(t *smt.Tree, offset int) {
+func optimize(t *smt.Tree, offset, iterationType int) {
 	w := bufio.NewWriter(os.Stdout)
 	topvec := make([]int, t.N()-2)
 	upperBound := math.Inf(1)
@@ -98,6 +50,19 @@ func optimize(t *smt.Tree, offset int) {
 	k := 1
 	m := 0
 
+	doOptimize := func(oldError float64) (float64, float64) {
+		switch iterationType {
+		case IterationConstSimple:
+			t.SimpleIteration()
+		case IterationConstSmith:
+			eps := 1e-4 * oldError / float64(t.N())
+			t.SmithsIteration(eps)
+		default:
+			panic("Iteration type unknown.")
+		}
+		return t.Length(), t.Error()
+	}
+
 	for {
 		nc := 0
 		for x := 0; x < 2*k+1 && k <= t.N()-3; x++ {
@@ -105,22 +70,15 @@ func optimize(t *smt.Tree, offset int) {
 			t.Sprout(x)
 			q := t.Length()
 			r := t.Error()
-			eps := 1e-4 * r / float64(t.N())
 
 			if q-r < upperBound {
 				for r > 5e-3*q {
-					t.SmithsIteration(eps)
-					q = t.Length()
-					r = t.Error()
-					eps = 1e-4 * r / float64(t.N())
+					q, r = doOptimize(r)
 				}
 
 				if k >= t.N()-3 {
 					for r > 1e-4*q {
-						t.SmithsIteration(eps)
-						q = t.Length()
-						r = t.Error()
-						eps = 1e-4 * r / float64(t.N())
+						q, r = doOptimize(r)
 					}
 					if q < upperBound {
 						smt.PrintTree(w, t, topvec, offset)
@@ -166,71 +124,3 @@ func optimize(t *smt.Tree, offset int) {
 		}
 	}
 }
-
-// func optimizeOld(t *smt.Tree, offset int) {
-// 	w := bufio.NewWriter(os.Stdout)
-// 	topvec := []int{0}
-// 	upperBound := math.Inf(1)
-// 	maxPoints := 2*t.N() - 2
-
-// 	for {
-// 		i := len(topvec) - 1
-// 		t.Sprout(topvec[i])
-// 		q := t.Length()
-// 		r := t.Error()
-
-// 		if q-r < upperBound {
-// 			for r > 0.005*q {
-// 				// t.SimpleIteration()
-// 				t.SmithsIteration()
-// 				q = t.Length()
-// 				r = t.Error()
-// 			}
-
-// 			if len(t.Points()) >= maxPoints {
-// 				for r > 0.0001*q {
-// 					// t.SimpleIteration()
-// 					t.SmithsIteration()
-// 					q = t.Length()
-// 					r = t.Error()
-// 				}
-// 				if q < upperBound {
-// 					smt.PrintTree(w, t, topvec, offset)
-// 					upperBound = q
-// 				}
-// 			}
-// 		} else {
-// 			if topvec[i] < 2*(i+1) {
-// 				t.Restore(topvec[i])
-// 				topvec[i]++
-// 				continue
-// 			}
-// 		}
-
-// 		topvec = nextTopvec(t, topvec)
-// 		if len(topvec) == 0 {
-// 			os.Exit(0)
-// 		}
-// 	}
-// }
-
-// func nextTopvec(t *smt.Tree, topvec []int) []int {
-// 	maxPoints := 2*t.N() - 2
-// 	if len(t.Points()) < maxPoints {
-// 		topvec = append(topvec, 0)
-// 	} else {
-// 		// pop all points being 2i
-// 		for i := len(topvec) - 1; i >= 0; i-- {
-// 			t.Restore(topvec[i])
-// 			if topvec[i] < 2*(i+1) {
-// 				// increment element and break
-// 				topvec[i]++
-// 				break
-// 			} else {
-// 				// remove element
-// 				topvec = topvec[:i]
-// 			}
-// 		}
-// 	}
-// 	return topvec
-// }

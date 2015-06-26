@@ -131,9 +131,9 @@ func (t *Tree) SmithsIteration(epsilon float64) {
 	}
 }
 
-// SimpleIteration runs a single simple iteration where all points a updated one
-// at a time. Each Steiner point is calculated by finding the Fermat-Torricelli
-// point.
+// SimpleIteration runs a single simple iteration where all points are updated
+// one at a time. Each Steiner point is calculated by finding the
+// Fermat-Torricelli point.
 func (t *Tree) SimpleIteration() {
 	for sIdx, eIdx := range t.adjacencies {
 		pIdx := adjacentPoints(sIdx, t)

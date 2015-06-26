@@ -29,8 +29,8 @@ func fermatTorricelliPoint(sIdx int, pIdx [3]int, t *Tree) Point {
 
 	epsilon := 1e-4 * t.Error() / float64(t.n)
 	a12 := squaredDistance(p[0], p[1])
-	a23 := squaredDistance(p[0], p[2])
-	a31 := squaredDistance(p[2], p[1])
+	a23 := squaredDistance(p[1], p[2])
+	a31 := squaredDistance(p[2], p[0])
 	d12 := math.Sqrt(a12)
 	d23 := math.Sqrt(a23)
 	d31 := math.Sqrt(a31)
@@ -46,7 +46,7 @@ func fermatTorricelliPoint(sIdx int, pIdx [3]int, t *Tree) Point {
 		//steiner point is at p[2]
 		copy(steinerPoint, p[2])
 	default:
-		sqrt3over2 := math.Sqrt(3 / 2)
+		sqrt3over2 := math.Sqrt(3) / 2
 		q := (d12 + d23 + d31) / 2
 		s := 2 * math.Sqrt(q*(q-d12)*(q-d23)*(q-d31))
 		k0 := (a12+a31-a23)*sqrt3over2 + s
@@ -97,7 +97,7 @@ func PrintTree(w *bufio.Writer, t *Tree, topvec []int, offset int) {
 	}
 	fmt.Fprint(w, "\n### Terminals ###\n")
 	for i, p := range t.points[:t.n] {
-		fmt.Fprintf(w, "%v : [", t.n+i+offset)
+		fmt.Fprintf(w, "%v : [", i+offset)
 		for _, x := range p {
 			fmt.Fprintf(w, "%10.10f ", x)
 		}
