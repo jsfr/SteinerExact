@@ -1,0 +1,4 @@
+./steinertree -sort -iteration=simple examples/estein10_2.json
+./steinertree -iteration=simple examples/estein10_2.json
+./steinertree -sort -iteration=smith examples/estein10_2.json
+./steinertree -iteration=smith examples/estein10_2.json

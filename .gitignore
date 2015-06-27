@@ -4,5 +4,7 @@
 !examples/*.json
 !smt
 !*.go
+!benchmark.pl
+!benchmarks.txt
 !*Makefile
 !*README.md
