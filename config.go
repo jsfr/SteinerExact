@@ -32,7 +32,7 @@ func initConfig() config {
 			" Otherwise it will be set to the default which is 1")
 	offset := flag.Bool("1", false,
 		"If enabled will 1-index printed points, topology vectors etc.")
-	cpuprofile := flag.String("profile", "",
+	cpuprofile := flag.String("cpuprofile", "",
 		"Enable and write cpu profile to file specified file")
 	sort := flag.Bool("sort", false,
 		"if set the terminals will be sorted such that each "+

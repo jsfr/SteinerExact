@@ -1,7 +1,8 @@
 *
 !.gitignore
 !examples
-!examples/*.json
+!examples/*
+!examples/*/*.json
 !smt
 !*.go
 !benchmark.pl

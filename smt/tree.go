@@ -4,15 +4,15 @@ import "math"
 
 // Tree is defined as the following: It contains all N regular points, as the
 // first N entries, and all N-2 Steiner points, as the N+1..2N-2 entries. The
-// topology is then defined by the edges. To easily find the edges ending at a
-// Steiner point, the indices of all edges having Steiner point i as a end point
-// are stored in adjacencies[i] as a 3-element array
+// topology is then defined by the edges. adjacencies contains the index of all
+// points that are neighbors to the Steiner point i, thus indices in
+// adjacencies are sIdx-t.n
 type Tree struct {
 	n           int
 	dim         int
 	points      Points
 	edges       Edges
-	adjacencies map[int]*[3]int
+	adjacencies [][3]int
 }
 
 // N is a getter for t.n
@@ -102,8 +102,8 @@ func InitTree(points *Points) *Tree {
 	t.edges = make(Edges, 0, 2*t.n-3)
 	t.edges = append(t.edges, e0, e1, e2)
 
-	t.adjacencies = make(map[int]*[3]int)
-	t.adjacencies[t.n] = &[3]int{0, 1, 2}
+	t.adjacencies = make([][3]int, t.n-2)
+	t.adjacencies[0] = [3]int{0, 1, 2}
 
 	return &t
 }
@@ -140,26 +140,16 @@ func (t *Tree) Sprout(edgeIdx int) {
 	e2 := &t.edges[edgeIdx] // Should be defined AFTER append is used
 	e2.UpdateEdge(p2, sIdx)
 
-	idx := len(t.edges)
-
 	// assign new adjacencies
-	t.adjacencies[sIdx] = &[3]int{edgeIdx, idx - 2, idx - 1}
+	t.adjacencies[sIdx-t.n] = [3]int{p2, p0, p1}
 
 	// update adjacencies if any of the other points were Steiner points
-	if p0 >= t.n {
-		for i, e := range t.adjacencies[p0] {
-			if e == edgeIdx {
-				t.adjacencies[p0][i] = idx - 2
-				break
-			}
+	for i := 0; i < 3; i++ {
+		if p0 >= t.n && t.adjacencies[p0-t.n][i] == p1 {
+			t.adjacencies[p0-t.n][i] = sIdx
 		}
-	}
-	if p1 >= t.n {
-		for i, e := range t.adjacencies[p1] {
-			if e == edgeIdx {
-				t.adjacencies[p1][i] = idx - 1
-				break
-			}
+		if p1 >= t.n && t.adjacencies[p1-t.n][i] == p0 {
+			t.adjacencies[p1-t.n][i] = sIdx
 		}
 	}
 }
@@ -195,23 +185,17 @@ func (t *Tree) Restore(edgeIdx int) {
 	t.edges = t.edges[:idx-2]
 
 	// Delete adjacencies for the removed Steiner points
-	delete(t.adjacencies, s)
+	t.adjacencies[s-t.n][0] = 0
+	t.adjacencies[s-t.n][2] = 0
+	t.adjacencies[s-t.n][1] = 0
 
 	// Update adjacencies if any of the other points are Steiner points
-	if p0 >= t.n {
-		for i, e := range t.adjacencies[p0] {
-			if e == idx-2 {
-				t.adjacencies[p0][i] = edgeIdx
-				break
-			}
+	for i := 0; i < 3; i++ {
+		if p0 >= t.n && t.adjacencies[p0-t.n][i] == s {
+			t.adjacencies[p0-t.n][i] = p1
 		}
-	}
-	if p1 >= t.n {
-		for i, e := range t.adjacencies[p1] {
-			if e == idx-1 {
-				t.adjacencies[p1][i] = edgeIdx
-				break
-			}
+		if p1 >= t.n && t.adjacencies[p1-t.n][i] == s {
+			t.adjacencies[p1-t.n][i] = p0
 		}
 	}
 }
@@ -227,24 +211,34 @@ func (t *Tree) Error() float64 {
 	}
 
 	var error float64
-	for sIdx, adj := range t.adjacencies {
-		e0 := t.edges[adj[0]]
-		e1 := t.edges[adj[1]]
-		e2 := t.edges[adj[2]]
+	n := len(t.points) - t.n
+	for i := 0; i < n; i++ {
+		adj := t.adjacencies[i]
+		sIdx := i + t.n
 
-		l01 := e0.Length() * e1.Length()
-		l12 := e1.Length() * e2.Length()
-		l20 := e2.Length() * e0.Length()
+		s := t.points[sIdx]
+		p0 := t.points[adj[0]]
+		p1 := t.points[adj[1]]
+		p2 := t.points[adj[2]]
 
-		pIdx := adjacentPoints(sIdx, t)
+		l0 := math.Sqrt(squaredDistance(s, p0))
+		l1 := math.Sqrt(squaredDistance(s, p1))
+		l2 := math.Sqrt(squaredDistance(s, p2))
 
-		v0 := t.points[pIdx[0]].Subtract(t.points[sIdx])
-		v1 := t.points[pIdx[1]].Subtract(t.points[sIdx])
-		v2 := t.points[pIdx[2]].Subtract(t.points[sIdx])
+		l01 := l0 * l1
+		l12 := l1 * l2
+		l20 := l2 * l0
 
-		p01 := DotProduct(v0, v1)
-		p12 := DotProduct(v1, v2)
-		p20 := DotProduct(v2, v0)
+		var p01, p12, p20 float64
+
+		for i := 0; i < t.dim; i++ {
+			v0 := p0[i] - s[i]
+			v1 := p1[i] - s[i]
+			v2 := p2[i] - s[i]
+			p01 = p01 + v0*v1
+			p12 = p12 + v1*v2
+			p20 = p20 + v2*v0
+		}
 
 		error = error +
 			pos(2*p01+l01) +

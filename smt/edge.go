@@ -6,10 +6,9 @@ import "math"
 // the length of the edge in the tree, and t is a reference to the tree the edge
 // belongs to.
 type Edge struct {
-	p0     int
-	p1     int
-	length float64
-	t      *Tree
+	p0 int
+	p1 int
+	t  *Tree
 }
 
 // Edges is just a list of edges
@@ -28,17 +27,16 @@ func (e *Edge) P1() int {
 // Length calculates the length of the edge if this is necessary. Otherwise it
 // simple returns the already stored length.
 func (e *Edge) Length() float64 {
-	if e.length < 0 {
-		e.SetLength()
-	}
-	return e.length
+	p0 := e.t.points[e.p0]
+	p1 := e.t.points[e.p1]
+	dist := squaredDistance(p0, p1)
+	return math.Sqrt(dist)
 }
 
 // InitEdge creates and returns a new edge. The length is not calculated on
 // creation, but is put of until needed.
 func InitEdge(t *Tree, p0, p1 int) Edge {
-	e := Edge{p0, p1, 0, t}
-	e.UnsetLength()
+	e := Edge{p0: p0, p1: p1, t: t}
 	return e
 }
 
@@ -47,20 +45,4 @@ func InitEdge(t *Tree, p0, p1 int) Edge {
 func (e *Edge) UpdateEdge(p0, p1 int) {
 	e.p0 = p0
 	e.p1 = p1
-	e.UnsetLength()
-}
-
-// UnsetLength ensures that the edge length is recalculated upon the next
-// Length() call.
-func (e *Edge) UnsetLength() {
-	e.length = -1
-}
-
-// SetLength recalculates the edge length and sets it. This should normally not
-// be called on its own, as that will in most cases be handled using Length()
-func (e *Edge) SetLength() {
-	p0 := e.t.points[e.p0]
-	p1 := e.t.points[e.p1]
-	dist := squaredDistance(p0, p1)
-	e.length = math.Sqrt(dist)
 }

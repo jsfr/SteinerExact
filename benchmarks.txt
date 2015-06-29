@@ -1,4 +1,5 @@
-./steinertree -sort -iteration=simple examples/estein10_2.json
-./steinertree -iteration=simple examples/estein10_2.json
-./steinertree -sort -iteration=smith examples/estein10_2.json
-./steinertree -iteration=smith examples/estein10_2.json
+cat old/defs/estein10_2.def | {{time}} old/old_steinertree
+{{time}} ./steinertree -sort -iteration=simple examples/estein10_2.json
+{{time}} ./steinertree -iteration=simple examples/estein10_2.json
+{{time}} ./steinertree -sort -iteration=smith examples/estein10_2.json
+{{time}} ./steinertree -iteration=smith examples/estein10_2.json

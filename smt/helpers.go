@@ -61,19 +61,6 @@ func fermatTorricelliPoint(sIdx int, pIdx [3]int, t *Tree) Point {
 	return steinerPoint
 }
 
-func adjacentPoints(sIdx int, t *Tree) (pIdx [3]int) {
-	pIdx = [3]int{}
-	for i, j := range t.adjacencies[sIdx] {
-		e := t.edges[j]
-		if e.P0() != sIdx {
-			pIdx[i] = e.P0()
-		} else {
-			pIdx[i] = e.P1()
-		}
-	}
-	return
-}
-
 // PrintTree outputs the tree and topology vector is is given in a customized
 // format. All indices outputted are offset by the given integer.
 func PrintTree(w *bufio.Writer, t *Tree, topvec []int, offset int) {
