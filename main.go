@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"math"
 	"os"
@@ -49,6 +50,7 @@ func optimize(t *smt.Tree, offset, iterationType int) {
 	len := make([]float64, 2*t.N())
 	k := 1
 	m := 0
+	ct := 0
 
 	doOptimize := func(oldError float64) (float64, float64) {
 		switch iterationType {
@@ -63,6 +65,20 @@ func optimize(t *smt.Tree, offset, iterationType int) {
 		return t.Length(), t.Error()
 	}
 
+	// Special case N = 3
+	if t.N() == 3 {
+		q := t.Length()
+		r := t.Error()
+
+		for r > 1e-4*q {
+			q, r = doOptimize(r)
+		}
+
+		smt.PrintTree(w, t, topvec, offset)
+		fmt.Fprintf(w, "%v trees optimized\n\n", ct)
+		return
+	}
+
 	for {
 		nc := 0
 		for x := 0; x < 2*k+1 && k <= t.N()-3; x++ {
@@ -72,6 +88,7 @@ func optimize(t *smt.Tree, offset, iterationType int) {
 			r := t.Error()
 
 			if q-r < upperBound {
+				ct++
 				for r > 5e-3*q {
 					q, r = doOptimize(r)
 				}
@@ -83,6 +100,7 @@ func optimize(t *smt.Tree, offset, iterationType int) {
 					if q < upperBound {
 						smt.PrintTree(w, t, topvec, offset)
 						upperBound = q
+						fmt.Fprintf(w, "%v trees optimized\n\n", ct)
 					}
 				} else {
 					i := nc
@@ -107,6 +125,8 @@ func optimize(t *smt.Tree, offset, iterationType int) {
 			t.Restore(topvec[k])
 			k--
 			if k <= 0 {
+				fmt.Fprintf(w, "%v trees optimized\n\n", ct)
+				w.Flush()
 				return
 			}
 			nc = stack[m]
