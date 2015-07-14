@@ -50,7 +50,8 @@ func optimize(t *smt.Tree, offset, iterationType int) {
 	len := make([]float64, 2*t.N())
 	k := 1
 	m := 0
-	ct := 0
+	iterCount := 0 // Number of times doOptimize is called
+	treeCount := 0 // Number of trees we optimize on at least once
 
 	doOptimize := func(oldError float64) (float64, float64) {
 		switch iterationType {
@@ -62,6 +63,7 @@ func optimize(t *smt.Tree, offset, iterationType int) {
 		default:
 			panic("Iteration type unknown.")
 		}
+		iterCount++
 		return t.Length(), t.Error()
 	}
 
@@ -69,13 +71,20 @@ func optimize(t *smt.Tree, offset, iterationType int) {
 	if t.N() == 3 {
 		q := t.Length()
 		r := t.Error()
+		optimized := false
 
 		for r > 1e-4*q {
 			q, r = doOptimize(r)
+			if !optimized {
+				treeCount++
+				optimized = true
+			}
 		}
 
 		smt.PrintTree(w, t, topvec, offset)
-		fmt.Fprintf(w, "%v trees optimized\n\n", ct)
+		fmt.Fprintf(w, "%v trees optimized\n"+
+			"%v optimization iterations\n\n",
+			treeCount, iterCount)
 		return
 	}
 
@@ -86,21 +95,33 @@ func optimize(t *smt.Tree, offset, iterationType int) {
 			t.Sprout(x)
 			q := t.Length()
 			r := t.Error()
+			optimized := false
 
+		ITER:
 			if q-r < upperBound {
-				ct++
-				for r > 5e-3*q {
+				if r > 5e-3*q {
 					q, r = doOptimize(r)
+					if !optimized {
+						treeCount++
+						optimized = true
+					}
+					goto ITER
 				}
 
 				if k >= t.N()-3 {
 					for r > 1e-4*q {
 						q, r = doOptimize(r)
+						if !optimized {
+							treeCount++
+							optimized = true
+						}
 					}
 					if q < upperBound {
 						smt.PrintTree(w, t, topvec, offset)
+						fmt.Fprintf(w, "%v trees optimized\n"+
+							"%v optimization iterations\n\n",
+							treeCount, iterCount)
 						upperBound = q
-						fmt.Fprintf(w, "%v trees optimized\n\n", ct)
 					}
 				} else {
 					i := nc
@@ -125,7 +146,9 @@ func optimize(t *smt.Tree, offset, iterationType int) {
 			t.Restore(topvec[k])
 			k--
 			if k <= 0 {
-				fmt.Fprintf(w, "%v trees optimized\n\n", ct)
+				fmt.Fprintf(w, "%v trees optimized\n"+
+					"%v optimization iterations\n",
+					treeCount, iterCount)
 				w.Flush()
 				return
 			}
