@@ -110,10 +110,7 @@ func InitTree(points *Points) *Tree {
 
 // Sprout grows the tree by the next unconnected terminal. The connection is
 // made on the edge at t.edges[edgeIdx]. After the sprouting two new edges are
-// placed at the back of the edge list. These go from the points of the edge
-// sprouted on to the new Steiner point. On the same time the old edge is
-// replaced with one going from the new Steiner point to the newly connected
-// terminal.
+// placed at the back of the edge list.
 func (t *Tree) Sprout(edgeIdx int) {
 	if len(t.points) >= 2*t.n-2 {
 		panic("A FST cannot contain any more Steiner points")
@@ -131,14 +128,14 @@ func (t *Tree) Sprout(edgeIdx int) {
 	t.points = append(t.points, s)
 
 	// Create the new edges and append them to the edge list
-	e0 := InitEdge(t, p0, sIdx)
-	e1 := InitEdge(t, p1, sIdx)
+	e0 := InitEdge(t, p1, sIdx)
+	e1 := InitEdge(t, p2, sIdx)
 	t.edges = append(t.edges, e0)
 	t.edges = append(t.edges, e1)
 
 	// Change the end points of the original edge
 	e2 := &t.edges[edgeIdx] // Should be defined AFTER append is used
-	e2.UpdateEdge(p2, sIdx)
+	e2.UpdateEdge(p0, sIdx)
 
 	// assign new adjacencies
 	t.adjacencies[sIdx-t.n] = [3]int{p2, p0, p1}
@@ -170,8 +167,8 @@ func (t *Tree) Restore(edgeIdx int) {
 	e2 := &t.edges[edgeIdx]
 
 	s := e2.P1()
-	p0 := e0.P0()
-	p1 := e1.P0()
+	p0 := e2.P0()
+	p1 := e0.P0()
 
 	if s != e0.P1() || s != e1.P1() {
 		panic("The edges do not go to the same Steiner point")
