@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"runtime/pprof"
 
-	"bitbucket.org/jsfrv/smt-algorithm/smt"
+	"github.com/jsfr/SteinerExact/smt"
 )
 
 func main() {
@@ -53,6 +53,8 @@ func optimize(t *smt.Tree, offset, iterationType int) {
 	iterCount := 0 // Number of times doOptimize is called
 	treeCount := 0 // Number of trees we optimize on at least once
 
+	fmt.Fprintf(w, "nodes: %v\n\n", t.N())
+
 	doOptimize := func(oldError float64) (float64, float64) {
 		switch iterationType {
 		case IterationConstSimple:
@@ -82,9 +84,10 @@ func optimize(t *smt.Tree, offset, iterationType int) {
 		}
 
 		smt.PrintTree(w, t, topvec, offset)
-		fmt.Fprintf(w, "%v trees optimized\n"+
-			"%v optimization iterations\n\n",
-			treeCount, iterCount)
+		fmt.Fprintf(w, "nodes: %v\n"+
+			"trees: %v\n"+
+			"iterations: %v\n\n",
+			t.N(), treeCount, iterCount)
 		return
 	}
 
@@ -118,9 +121,6 @@ func optimize(t *smt.Tree, offset, iterationType int) {
 					}
 					if q < upperBound {
 						smt.PrintTree(w, t, topvec, offset)
-						fmt.Fprintf(w, "%v trees optimized\n"+
-							"%v optimization iterations\n\n",
-							treeCount, iterCount)
 						upperBound = q
 					}
 				} else {
@@ -146,9 +146,10 @@ func optimize(t *smt.Tree, offset, iterationType int) {
 			t.Restore(topvec[k])
 			k--
 			if k <= 0 {
-				fmt.Fprintf(w, "%v trees optimized\n"+
-					"%v optimization iterations\n",
-					treeCount, iterCount)
+				fmt.Fprintf(w, "nodes: %v\n"+
+					"trees: %v\n"+
+					"iterations: %v\n\n",
+					t.N(), treeCount, iterCount)
 				w.Flush()
 				return
 			}

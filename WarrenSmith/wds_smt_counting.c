@@ -230,7 +230,8 @@ main() { /* Inputs NUMSITES, DIMENSION, sites; outputs succesive best Steiner
     } while ( r > q *0.0001);
     printf("\nnew record length %20.20g\n", q);
     output_tree();
-    printf("done\n"); fflush(stdout); exit(0);
+    printf("\nnodes: %d\ntrees: %d\niterations: %d\n", NUMSITES, treeCount, iterCount);
+    exit(0);
   }
 
   /* (2) Preprocessing and initialization */
@@ -276,7 +277,6 @@ main() { /* Inputs NUMSITES, DIMENSION, sites; outputs succesive best Steiner
 	    printf("\nnew record length %20.20g\n", q);
 	    for (i = 1; i <= k; i++) BESTVEC[i] = A[i];
 	    output_tree();
-            printf("\n%d trees optimized\n%d optimization iterations\n", treeCount, iterCount);
 	    STUB = q;
 	  }
 	}
@@ -294,7 +294,7 @@ main() { /* Inputs NUMSITES, DIMENSION, sites; outputs succesive best Steiner
     while (nc <= 0) {
       k--;
       if (k <= 0) {
-        printf("\n%d trees optimized\n%d optimization iterations\n", treeCount, iterCount);
+        printf("\nnodes: %d\ntrees: %d\niterations: %d\n", NUMSITES, treeCount, iterCount);
         fflush(stdout);
         exit(0);
       }

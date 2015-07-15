@@ -5,7 +5,7 @@ import (
 	"flag"
 	"os"
 
-	"bitbucket.org/jsfrv/smt-algorithm/smt"
+	"github.com/jsfr/SteinerExact/smt"
 )
 
 type config struct {

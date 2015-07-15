@@ -1,7 +1,10 @@
-all: build
+CC = gcc
+CFLAGS = -lm -std=c89
 
-build: wds_smt_counting.c
-    gcc -lm -std=c89 -o old_steinertree ./wds_smt_counting.c
+all: steinertree_old
+
+steinertree_old: wds_smt_counting.c
+	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
-    rm old_steinertree
+	rm -f steinertree_old
