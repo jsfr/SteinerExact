@@ -1,6 +1,6 @@
 #!/bin/bash
 
-timeout="2s"
+timeout="12h"
 
 echo -e "{"
 {
