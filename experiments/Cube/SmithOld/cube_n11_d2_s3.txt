@@ -1,0 +1,7 @@
+{
+	"nodes": 11,
+	"trees": 5588,
+	"iterations": 77311,
+	"time": 0.13,
+	"success": true
+}
