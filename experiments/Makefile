@@ -1,21 +1,25 @@
-MAKE = make
+TARGETS = sausage iowa05 solids cube carioca
 
-carioca:
-	$(MAKE) -C Carioca
+all: $(TARGETS)
 
 sausage:
-	$(MAKE) -C Sausage
+	cd Sausage; make
 
 iowa05:
-	$(MAKE) -C Iowa05
+	cd Iowa05; make
 
 solids:
-	$(MAKE) -C Solids
+	cd Solids; make
 
-all: sausage carioca iowa05 solids
+cube:
+	cd Cube; make
+
+carioca:
+	cd Carioca; make	
 
 clean:
-	$(MAKE) -C Carioca clean
-	$(MAKE) -C Sausage clean
-	$(MAKE) -C Iowa05 clean
-	$(MAKE) -C Solids clean
+	cd Sausage; make clean
+	cd Iowa05; make clean
+	cd Solids; make clean
+	cd Cube; make clean
+	cd Carioca; make clean

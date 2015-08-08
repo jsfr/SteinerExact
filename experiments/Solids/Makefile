@@ -1,25 +1,27 @@
-MAKE = make
+TARGETS = simple simplesort smithnew smithnewsort smithold
+
+MAKEOPTS = -j 8
+
+all: $(TARGETS)
 
 simple:
-	$(MAKE) -C Simple
+	cd Simple; make $(MAKEOPTS)
 
 simplesort:
-	$(MAKE) -C SimpleSort
+	cd SimpleSort; make $(MAKEOPTS)
 
 smithnew:
-	$(MAKE) -C SmithNew
+	cd SmithNew; make $(MAKEOPTS)
 
 smithnewsort:
-	$(MAKE) -C SmithNewSort
+	cd SmithNewSort; make $(MAKEOPTS)
 
 smithold:
-	$(MAKE) -C SmithOld
-
-all: simple simplesort smithnew smithnewsort smithold
+	cd SmithOld; make $(MAKEOPTS)
 
 clean:
-	$(MAKE) -C Simple clean
-	$(MAKE) -C SimpleSort clean
-	$(MAKE) -C SmithNew clean
-	$(MAKE) -C SmithNewSort clean
-	$(MAKE) -C SmithOld clean
+	cd Simple; make clean
+	cd SimpleSort; make clean
+	cd SmithNew; make clean
+	cd SmithNewSort; make clean
+	cd SmithOld; make clean
