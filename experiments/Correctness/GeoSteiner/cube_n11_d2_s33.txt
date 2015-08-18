@@ -1,0 +1,119 @@
+ % ../../../GeoSteiner/bb
+ % Args:
+ % Phase 1: 0.01 seconds
+
+%%BeginSetup
+
+0 1 0 1 SetAxes
+
+11 DefineTerminals
+	.3079489355000000	.6126976412000000	DT
+	.4672263043000000	.5413947988000000	DT
+	.3004468834000000	.2632564820000000	DT
+	.8872430967000000	.7088636578000000	DT
+	.0528921765000000	.2627286242000000	DT
+	.2802385941000000	.3090906377000000	DT
+	.2058983465000000	.1701670499000000	DT
+	.6832347255000000	.1237438932000000	DT
+	.9474799428000000	.1736593936000000	DT
+	.3251002693000000	.2867596859000000	DT
+	.3318277520000000	.4798882434000000	DT
+
+%%EndSetup
+
+ % initialize_constraint_pool: 0.00 seconds.
+ % Constraint pool initialized with:
+ %	1	Total degree rows	20	coeffs.
+ %	11	Cutset rows		52	coeffs.
+ %	0	Incompatibility rows	0	coeffs.
+ %	14	2-terminal SEC rows	40	coeffs.
+ %	26	Total rows in pool	12	in LP
+ % @PMEM 26 rows, 1 blocks, 310 nzfree, 0 nzwasted, 448 nztotal
+ % build_initial_formulation: 0.00 seconds.
+% Resuming node 0
+  % @PAP adding 12 rows, 72 nz to LP
+  % @PL 12 rows, 20 cols, 92 nonzeros, 4 slack, 8 tight.
+  % @PAP adding 3 rows, 12 nz to LP
+  % @PL 15 rows, 20 cols, 104 nonzeros, 5 slack, 10 tight.
+  % Node 0 LP 1 Solution, length = 16006148760.754852, 0.00 0
+ % 0 fractional variables
+ % @LO 0.00   1.60061487607548524892 99.9000000000
+ % @LN 0.00   1.60061487607548524892 99.9000000000
+ % @UO 0.00   1.94395255719821657969 17.6618343823
+ % @UN 0.00   1.94395255719821657969 17.6618343823
+ % @cutset: 2 connected components.
+ % initially 3 congested vertices:
+ % find_congested_components found 1 components:
+ %	component 0:	3 verts,	3 edges
+ % @D deleting 5 slack rows
+  % @PAP adding 2 rows, 11 nz to LP
+ % @PMEM 28 rows, 1 blocks, 297 nzfree, 0 nzwasted, 448 nztotal
+  % @PL 12 rows, 20 cols, 82 nonzeros, 2 slack, 10 tight.
+  % @PAP adding 1 rows, 4 nz to LP
+  % @PL 13 rows, 20 cols, 86 nonzeros, 2 slack, 11 tight.
+  % @PAP adding 1 rows, 2 nz to LP
+  % @PL 14 rows, 20 cols, 88 nonzeros, 2 slack, 12 tight.
+  % Node 0 LP 2 Solution, length = 19092862581.712700, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+ % 0 fractional variables
+ % @LO 0.00   1.60061487607548524892 17.6618343823
+ % @LN 0.00   1.90928625817126995656 1.7832893554
+ % @UO 0.00   1.94395255719821657969 1.7832893554
+ % @UN 0.00   1.94108814450768885074 1.6383535403
+ % Fixed 2 vars to 0 and 1 vars to 1.
+ % @cutset: 2 connected components.
+ % initially 3 congested vertices:
+ % find_congested_components found 1 components:
+ %	component 0:	3 verts,	3 edges
+ % @D deleting 2 slack rows
+  % @PAP adding 2 rows, 12 nz to LP
+ % @PMEM 30 rows, 1 blocks, 283 nzfree, 0 nzwasted, 448 nztotal
+  % @PL 14 rows, 20 cols, 90 nonzeros, 0 slack, 14 tight.
+  % Node 0 LP 3 Solution, length = 19410881445.076889, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+  %       0     0        cutoff19410881445.0769
+ % @LO 0.00   1.90928625817126995656 1.6383535403
+ % @LN 0.00   1.94108814450768885074 0.0000000000
+
+ % Certificate of solution:
+ % @C	.3593268335967997	.5349042719183458
+ % @C	.2035842009358505	.1941156919104490
+ % @C	.2807238574111914	.3092056337813891
+ % @C	.3061385636330864	.2822662041183336
+%%Page: 1 1
+BeginPlot
+	Plot_Terminals
+ % fs0: 10 0 1
+	10 T	.3593268335967997	.5349042719183458	S
+	.3593268335967997	.5349042719183458	0 T	S
+	.3593268335967997	.5349042719183458	1 T	S
+ % fs2: 6 4 2
+	6 T	.2035842009358505	.1941156919104490	S
+	.2035842009358505	.1941156919104490	4 T	S
+	.2035842009358505	.1941156919104490	2 T	S
+ % fs9: 10 9 2 5
+	10 T	.2807238574111914	.3092056337813891	S
+	.2807238574111914	.3092056337813891	.3061385636330864	.2822662041183336	S
+	.3061385636330864	.2822662041183336	9 T	S
+	.3061385636330864	.2822662041183336	2 T	S
+	.2807238574111914	.3092056337813891	5 T	S
+ % fs17: 7 8
+	7 T	8 T	S
+ % fs18: 9 7
+	9 T	7 T	S
+ % fs19: 3 1
+	3 T	1 T	S
+  (Steiner Minimal Tree:  11 points,  length = 1.941088144507688,  0.01 seconds)
+EndPlot
+
+% @0 
+% N M Nodes LPs P1CPU P2CPU TotCPU
+% @1 11 20 1 3 0.01 0.00 0.01
+% Z RootZ %Gap RootLPs RootCPU RedMST
+% @2 1.941088144507688 (1.941088) 0.00000 3 0.00 1.5833
+% InitPRows InitPNZ InitLPRows InitLPNZ
+% @3 26 112 12 92
+% RootPRows RootPNZ RootLPRows RootLPNZ
+% @4 30 135 14 90
+% FinalPRows FinalPNZ FinalLPRows FinalLPNZ
+% @5 30 135 14 90
+% SMTFSTs SMTAvgFSTSz SMTMaxFSTSz #2FSTs #3FSTs ... #10FSTS #>10FSTs
+% @6 6 2.666667 4 3 2 1 0 0 0 0 0 0 0

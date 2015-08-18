@@ -1,0 +1,102 @@
+ % ../../../GeoSteiner/bb
+ % Args:
+ % Phase 1: 0.02 seconds
+
+%%BeginSetup
+
+0 1 0 1 SetAxes
+
+10 DefineTerminals
+	.2299670750000000	.8697586934000000	DT
+	.5547460311000000	.5776126504000000	DT
+	.9940509931000000	.5953307052000000	DT
+	.7999637326000000	.8187845688000000	DT
+	.6298717496000000	.5035535896000000	DT
+	.7460086135000000	.8155644125000000	DT
+	.9956452860000000	.5080417518000000	DT
+	.6990755753000000	.2370779334000000	DT
+	.3946801244000000	.8697485588000000	DT
+	.2358092783000000	.2918461092000000	DT
+
+%%EndSetup
+
+ % initialize_constraint_pool: 0.00 seconds.
+ % Constraint pool initialized with:
+ %	1	Total degree rows	41	coeffs.
+ %	10	Cutset rows		158	coeffs.
+ %	0	Incompatibility rows	0	coeffs.
+ %	31	2-terminal SEC rows	261	coeffs.
+ %	41	Total rows in pool	11	in LP
+ % @PMEM 41 rows, 1 blocks, 1343 nzfree, 0 nzwasted, 1840 nztotal
+ % build_initial_formulation: 0.00 seconds.
+% Resuming node 0
+  % @PAP adding 11 rows, 199 nz to LP
+  % @PL 11 rows, 41 cols, 240 nonzeros, 6 slack, 5 tight.
+  % @PAP adding 3 rows, 37 nz to LP
+  % @PL 14 rows, 41 cols, 277 nonzeros, 4 slack, 10 tight.
+  % @PAP adding 3 rows, 11 nz to LP
+  % @PL 17 rows, 41 cols, 288 nonzeros, 6 slack, 11 tight.
+  % @PAP adding 1 rows, 8 nz to LP
+  % @PL 18 rows, 41 cols, 296 nonzeros, 5 slack, 13 tight.
+  % @PAP adding 1 rows, 12 nz to LP
+  % @PL 19 rows, 41 cols, 308 nonzeros, 6 slack, 13 tight.
+  % Node 0 LP 1 Solution, length = 19500873633.873199, 0.00 0
+ % 4 fractional variables
+ % @LO 0.00   1.95008736338731991644 99.9000000000
+ % @LN 0.00   1.95008736338731991644 99.9000000000
+ % @UO 0.00   1.95389231422811282535 0.1947369777
+ % @UN 0.00   1.95389231422811282535 0.1947369777
+ % Fixed 30 vars to 0 and 2 vars to 1.
+ % initially 3 congested vertices:
+ % find_congested_components found 1 components:
+ %	component 0:	3 verts,	3 edges
+ % @D deleting 6 slack rows
+  % @PAP adding 1 rows, 22 nz to LP
+ % @PMEM 42 rows, 1 blocks, 1320 nzfree, 0 nzwasted, 1840 nztotal
+  % @PL 14 rows, 41 cols, 231 nonzeros, 1 slack, 13 tight.
+  % Node 0 LP 2 Solution, length = 19538923142.281128, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 1
+  %       0     0        cutoff19538923142.2811
+ % @LO 0.00   1.95008736338731991644 0.1947369777
+ % @LN 0.00   1.95389231422811282535 0.0000000000
+
+ % Certificate of solution:
+ % @C	.5725012120672866	.7392819879873833
+ % @C	.5805126322696775	.3672200898525498
+ % @C	.6234875718941942	.5021576040914801
+%%Page: 1 1
+BeginPlot
+	Plot_Terminals
+ % fs5: 8 5 1
+	8 T	.5725012120672866	.7392819879873833	S
+	.5725012120672866	.7392819879873833	5 T	S
+	.5725012120672866	.7392819879873833	1 T	S
+ % fs13: 9 1 4 7
+	9 T	.5805126322696775	.3672200898525498	S
+	.5805126322696775	.3672200898525498	.6234875718941942	.5021576040914801	S
+	.6234875718941942	.5021576040914801	1 T	S
+	.6234875718941942	.5021576040914801	4 T	S
+	.5805126322696775	.3672200898525498	7 T	S
+ % fs32: 3 5
+	3 T	5 T	S
+ % fs33: 6 2
+	6 T	2 T	S
+ % fs35: 8 0
+	8 T	0 T	S
+ % fs37: 2 3
+	2 T	3 T	S
+  (Steiner Minimal Tree:  10 points,  length = 1.953892314228112,  0.02 seconds)
+EndPlot
+
+% @0 
+% N M Nodes LPs P1CPU P2CPU TotCPU
+% @1 10 41 1 2 0.02 0.00 0.02
+% Z RootZ %Gap RootLPs RootCPU RedMST
+% @2 1.953892314228112 (1.953892) 0.00000 2 0.00 4.6643
+% InitPRows InitPNZ InitLPRows InitLPNZ
+% @3 41 456 11 240
+% RootPRows RootPNZ RootLPRows RootLPNZ
+% @4 42 478 14 231
+% FinalPRows FinalPNZ FinalLPRows FinalLPNZ
+% @5 42 478 14 231
+% SMTFSTs SMTAvgFSTSz SMTMaxFSTSz #2FSTs #3FSTs ... #10FSTS #>10FSTs
+% @6 6 2.500000 4 4 1 1 0 0 0 0 0 0 0

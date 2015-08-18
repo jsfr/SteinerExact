@@ -1,0 +1,111 @@
+ % ../../../GeoSteiner/bb
+ % Args:
+ % Phase 1: 0.01 seconds
+
+%%BeginSetup
+
+0 1 0 1 SetAxes
+
+10 DefineTerminals
+	.7955457819000000	.2153102822000000	DT
+	.3426214272000000	.2961611940000000	DT
+	.2554381654000000	.7100804400000000	DT
+	.8547150078000000	.6357949691000000	DT
+	.4054190886000000	.6635035848000000	DT
+	.7047985609000000	.1648330605000000	DT
+	.8887816281000000	.2970957897000000	DT
+	.7287201051000000	.3965607492000000	DT
+	.6638084062000000	.3077898539000000	DT
+	.4603446049000000	.1393605741000000	DT
+
+%%EndSetup
+
+ % initialize_constraint_pool: 0.00 seconds.
+ % Constraint pool initialized with:
+ %	1	Total degree rows	25	coeffs.
+ %	10	Cutset rows		73	coeffs.
+ %	0	Incompatibility rows	0	coeffs.
+ %	18	2-terminal SEC rows	72	coeffs.
+ %	29	Total rows in pool	11	in LP
+ % @PMEM 29 rows, 1 blocks, 481 nzfree, 0 nzwasted, 680 nztotal
+ % build_initial_formulation: 0.00 seconds.
+% Resuming node 0
+  % @PAP adding 11 rows, 98 nz to LP
+  % @PL 11 rows, 25 cols, 123 nonzeros, 4 slack, 7 tight.
+  % @PAP adding 2 rows, 9 nz to LP
+  % @PL 13 rows, 25 cols, 132 nonzeros, 4 slack, 9 tight.
+  % @PAP adding 2 rows, 11 nz to LP
+  % @PL 15 rows, 25 cols, 143 nonzeros, 4 slack, 11 tight.
+  % @PAP adding 2 rows, 11 nz to LP
+  % @PL 17 rows, 25 cols, 154 nonzeros, 5 slack, 12 tight.
+  % @PAP adding 1 rows, 3 nz to LP
+  % @PL 18 rows, 25 cols, 157 nonzeros, 5 slack, 13 tight.
+  % Node 0 LP 1 Solution, length = 14352864423.047365, 0.00 0
+ % 6 fractional variables
+ % @LO 0.00   1.43528644230473645393 99.9000000000
+ % @LN 0.00   1.43528644230473645393 99.9000000000
+ % @UO 0.00   1.70007910468537337678 15.5753142104
+ % @UN 0.00   1.70007910468537337678 15.5753142104
+ % Fixed 2 vars to 0 and 0 vars to 1.
+ % @cutset: 3 connected components.
+ % initially 5 congested vertices:
+ % find_congested_components found 1 components:
+ %	component 0:	5 verts,	7 edges
+ % @D deleting 5 slack rows
+  % @PAP adding 13 rows, 134 nz to LP
+ % @PMEM 42 rows, 1 blocks, 334 nzfree, 0 nzwasted, 680 nztotal
+  % @PL 26 rows, 25 cols, 245 nonzeros, 9 slack, 17 tight.
+  % @PAP adding 1 rows, 2 nz to LP
+  % @PL 27 rows, 25 cols, 247 nonzeros, 9 slack, 18 tight.
+  % @PAP adding 1 rows, 5 nz to LP
+  % @PL 28 rows, 25 cols, 252 nonzeros, 8 slack, 20 tight.
+  % Node 0 LP 2 Solution, length = 16916393608.785980, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 13
+ % 0 fractional variables
+ % @UO 0.00   1.70007910468537337678 15.5753142104
+ % @UN 0.00   1.69163936087859800850 15.1541117157
+  % *     0     016916393608.786016916393608.7860
+ % @LO 0.00   1.43528644230473645393 15.1541117157
+ % @LN 0.00   1.69163936087859800850 0.0000000000
+
+ % Certificate of solution:
+ % @C	.3612720396511048	.6411015837496111
+ % @C	.4694118195028410	.1822441761009858
+ % @C	.6496938715900367	.2410348347287155
+ % @C	.7095412864580516	.1872638911508666
+%%Page: 1 1
+BeginPlot
+	Plot_Terminals
+ % fs0: 4 1 2
+	4 T	.3612720396511048	.6411015837496111	S
+	.3612720396511048	.6411015837496111	1 T	S
+	.3612720396511048	.6411015837496111	2 T	S
+ % fs15: 9 1 8 0 5
+	9 T	.4694118195028410	.1822441761009858	S
+	.4694118195028410	.1822441761009858	1 T	S
+	.4694118195028410	.1822441761009858	.6496938715900367	.2410348347287155	S
+	.6496938715900367	.2410348347287155	8 T	S
+	.6496938715900367	.2410348347287155	.7095412864580516	.1872638911508666	S
+	.7095412864580516	.1872638911508666	0 T	S
+	.7095412864580516	.1872638911508666	5 T	S
+ % fs17: 8 7
+	8 T	7 T	S
+ % fs18: 0 6
+	0 T	6 T	S
+ % fs23: 3 7
+	3 T	7 T	S
+  (Steiner Minimal Tree:  10 points,  length = 1.691639360878598,  0.01 seconds)
+EndPlot
+
+% @0 
+% N M Nodes LPs P1CPU P2CPU TotCPU
+% @1 10 25 1 2 0.01 0.00 0.01
+% Z RootZ %Gap RootLPs RootCPU RedMST
+% @2 1.691639360878598 1.691639 0.00000 2 0.00 2.1330
+% InitPRows InitPNZ InitLPRows InitLPNZ
+% @3 29 170 11 123
+% RootPRows RootPNZ RootLPRows RootLPNZ
+% @4 42 304 28 252
+% FinalPRows FinalPNZ FinalLPRows FinalLPNZ
+% @5 42 304 28 252
+% SMTFSTs SMTAvgFSTSz SMTMaxFSTSz #2FSTs #3FSTs ... #10FSTS #>10FSTs
+% @6 5 2.800000 5 3 1 0 1 0 0 0 0 0 0
