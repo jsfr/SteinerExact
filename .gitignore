@@ -1,2 +1,3 @@
 *.prof
 steinertree
+__pycache__

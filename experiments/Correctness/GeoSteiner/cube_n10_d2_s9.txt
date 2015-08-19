@@ -1,6 +1,6 @@
  % ../../../GeoSteiner/bb
  % Args:
- % Phase 1: 0.01 seconds
+ % Phase 1: 0.00 seconds
 
 %%BeginSetup
 
@@ -73,12 +73,12 @@ BeginPlot
 	2 T	3 T	S
  % fs21: 7 2
 	7 T	2 T	S
-  (Steiner Minimal Tree:  10 points,  length = 2.093059669993485,  0.01 seconds)
+  (Steiner Minimal Tree:  10 points,  length = 2.093059669993485,  0.00 seconds)
 EndPlot
 
 % @0 
 % N M Nodes LPs P1CPU P2CPU TotCPU
-% @1 10 23 1 1 0.01 0.00 0.01
+% @1 10 23 1 1 0.00 0.00 0.00
 % Z RootZ %Gap RootLPs RootCPU RedMST
 % @2 2.093059669993485 2.093060 0.00000 1 0.00 2.1415
 % InitPRows InitPNZ InitLPRows InitLPNZ

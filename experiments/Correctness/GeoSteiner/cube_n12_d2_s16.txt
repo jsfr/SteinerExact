@@ -46,8 +46,8 @@
  % 0 fractional variables
  % @LO 0.00   2.26270545828879798833 99.9000000000
  % @LN 0.00   2.26270545828879798833 99.9000000000
- % @UO 0.00   2.48231611726073175817 8.8470061265
- % @UN 0.00   2.48231611726073175817 8.8470061265
+ % @UO 0.01   2.48231611726073175817 8.8470061265
+ % @UN 0.01   2.48231611726073175817 8.8470061265
  % Fixed 2 vars to 0 and 0 vars to 1.
  % @cutset: 2 connected components.
  % initially 3 congested vertices:
@@ -57,10 +57,10 @@
   % @PAP adding 2 rows, 14 nz to LP
  % @PMEM 36 rows, 1 blocks, 586 nzfree, 0 nzwasted, 848 nztotal
   % @PL 16 rows, 31 cols, 146 nonzeros, 1 slack, 15 tight.
-  % Node 0 LP 2 Solution, length = 24823161172.607319, 0.00/0.00/0.00/0.00/0.00/0.00/0.00 2
+  % Node 0 LP 2 Solution, length = 24823161172.607319, 0.01/0.00/0.00/0.00/0.00/0.00/0.00 2
   %       0     0        cutoff24823161172.6073
- % @LO 0.00   2.26270545828879798833 8.8470061265
- % @LN 0.00   2.48231611726073175817 0.0000000000
+ % @LO 0.01   2.26270545828879798833 8.8470061265
+ % @LN 0.01   2.48231611726073175817 0.0000000000
 
  % Certificate of solution:
  % @C	.7638229788480994	.3744217540760327
@@ -93,14 +93,14 @@ BeginPlot
 	9 T	0 T	S
  % fs28: 2 7
 	2 T	7 T	S
-  (Steiner Minimal Tree:  12 points,  length = 2.482316117260731,  0.01 seconds)
+  (Steiner Minimal Tree:  12 points,  length = 2.482316117260731,  0.02 seconds)
 EndPlot
 
 % @0 
 % N M Nodes LPs P1CPU P2CPU TotCPU
-% @1 12 31 1 2 0.01 0.00 0.01
+% @1 12 31 1 2 0.01 0.01 0.02
 % Z RootZ %Gap RootLPs RootCPU RedMST
-% @2 2.482316117260731 (2.482316) 0.00000 2 0.00 2.8190
+% @2 2.482316117260731 (2.482316) 0.00000 2 0.01 2.8190
 % InitPRows InitPNZ InitLPRows InitLPNZ
 % @3 34 212 13 153
 % RootPRows RootPNZ RootLPRows RootLPNZ
