@@ -38,7 +38,7 @@ func (points *Points) SortPoints() {
 		var bestDist float64
 		for j, p1 := range *points {
 			var dist float64
-			dist = math.Sqrt(squaredDistance(sortedPoints[i], p1))
+			dist = math.Sqrt((sortedPoints[i]).squaredDistance(p1))
 			if dist > bestDist {
 				bestIdx = j
 				bestDist = dist
@@ -49,4 +49,13 @@ func (points *Points) SortPoints() {
 	}
 
 	*points = sortedPoints
+}
+
+func (p0 Point) squaredDistance(p1 Point) float64 {
+	dist := 0.0
+	for i := range p0 {
+		diff := p0[i] - p1[i]
+		dist = dist + (diff * diff)
+	}
+	return dist
 }

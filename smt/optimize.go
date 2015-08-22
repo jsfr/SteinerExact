@@ -53,9 +53,9 @@ func (t *Tree) SmithsIteration(epsilon float64) {
 		p1 := t.points[adj[1]]
 		p2 := t.points[adj[2]]
 
-		q[0] = 1 / (math.Sqrt(squaredDistance(s, p0)) + epsilon)
-		q[1] = 1 / (math.Sqrt(squaredDistance(s, p1)) + epsilon)
-		q[2] = 1 / (math.Sqrt(squaredDistance(s, p2)) + epsilon)
+		q[0] = 1 / (math.Sqrt(s.squaredDistance(p0)) + epsilon)
+		q[1] = 1 / (math.Sqrt(s.squaredDistance(p1)) + epsilon)
+		q[2] = 1 / (math.Sqrt(s.squaredDistance(p2)) + epsilon)
 
 		sum := q[0] + q[1] + q[2]
 		q[0] = q[0] / sum
@@ -165,6 +165,6 @@ func (t *Tree) SimpleIteration() {
 	for i := 0; i < n; i++ {
 		sIdx := t.n + i
 		adj := t.adjacencies[i]
-		t.points[sIdx] = fermatTorricelliPoint(sIdx, adj, t)
+		t.points[sIdx] = fermatTorricelliPoint(adj[0], adj[1], adj[2], t)
 	}
 }

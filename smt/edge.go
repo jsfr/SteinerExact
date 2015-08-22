@@ -29,7 +29,7 @@ func (e *Edge) P1() int {
 func (e *Edge) Length() float64 {
 	p0 := e.t.points[e.p0]
 	p1 := e.t.points[e.p1]
-	dist := squaredDistance(p0, p1)
+	dist := p0.squaredDistance(p1)
 	return math.Sqrt(dist)
 }
 

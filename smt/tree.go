@@ -218,9 +218,9 @@ func (t *Tree) Error() float64 {
 		p1 := t.points[adj[1]]
 		p2 := t.points[adj[2]]
 
-		l0 := math.Sqrt(squaredDistance(s, p0))
-		l1 := math.Sqrt(squaredDistance(s, p1))
-		l2 := math.Sqrt(squaredDistance(s, p2))
+		l0 := math.Sqrt(s.squaredDistance(p0))
+		l1 := math.Sqrt(s.squaredDistance(p1))
+		l2 := math.Sqrt(s.squaredDistance(p2))
 
 		l01 := l0 * l1
 		l12 := l1 * l2

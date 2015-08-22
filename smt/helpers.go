@@ -19,18 +19,18 @@ func pertubedCentroid(idx0, idx1, idx2 int, t *Tree) (centroid Point) {
 	return
 }
 
-func fermatTorricelliPoint(sIdx int, pIdx [3]int, t *Tree) Point {
+func fermatTorricelliPoint(idx0, idx1, idx2 int, t *Tree) Point {
 	steinerPoint := make(Point, t.dim)
 
 	p := make(Points, 3)
-	for i := range pIdx {
-		p[i] = t.points[pIdx[i]]
-	}
+	p[0] = t.points[idx0]
+	p[1] = t.points[idx1]
+	p[2] = t.points[idx2]
 
 	epsilon := 1e-4 * t.Error() / float64(t.n)
-	a12 := squaredDistance(p[0], p[1])
-	a23 := squaredDistance(p[1], p[2])
-	a31 := squaredDistance(p[2], p[0])
+	a12 := (p[0]).squaredDistance(p[1])
+	a23 := (p[1]).squaredDistance(p[2])
+	a31 := (p[2]).squaredDistance(p[0])
 	d12 := math.Sqrt(a12)
 	d23 := math.Sqrt(a23)
 	d31 := math.Sqrt(a31)
@@ -103,13 +103,4 @@ func PrintTree(w *bufio.Writer, t *Tree, topvec []int, offset int) {
 		"\n=============== END TREE ===============\n\n",
 		t.Error(), t.Length())
 	w.Flush()
-}
-
-func squaredDistance(p0, p1 Point) float64 {
-	dist := 0.0
-	for i := range p0 {
-		diff := p0[i] - p1[i]
-		dist = dist + (diff * diff)
-	}
-	return dist
 }
