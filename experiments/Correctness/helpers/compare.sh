@@ -9,12 +9,16 @@ for f in ../Instances/*json; do
 	simpleLen=`grep -A 1 Length ../Simple/$basename | tail -n 1 | sed 's/\t/ /g' | tr -s ' ' | cut -d ' ' -f 2 | cut -c 1-9`
 	simpleSortLen=`grep -A 1 Length ../SimpleSort/$basename | tail -n 1 | sed 's/\t/ /g' | tr -s ' ' | cut -d ' ' -f 2 | cut -c 1-9`
 
-	diffGeosteiner=$(qalc -t $geosteinerLen - $geosteinerLen)
 	diffSmithNew=$(qalc -t $smithNewLen - $geosteinerLen)
 	diffSmithNewSort=$(qalc -t $smithNewSortLen - $geosteinerLen)
 	diffSimple=$(qalc -t $simpleLen - $geosteinerLen)
 	diffSimpleSort=$(qalc -t $simpleSortLen - $geosteinerLen)
 	diff=$(qalc -t "$diffGeosteiner + $diffSmithNew + $diffSmithNewSort + $diffSimple + $diffSimpleSort >= 0.00001")
+
+	ratioSmithNew=$(qalc -t $diffSmithNew/$geosteinerLen*100)
+	ratioSmithNewSort=$(qalc -t $diffSmithNewSort/$geosteinerLen*100)
+	ratioSimple=$(qalc -t $diffSimple/$geosteinerLen*100)
+	ratioSimpleSort=$(qalc -t $diffSimpleSort/$geosteinerLen*100)
 
 	if [ $diff -eq 1 ]; then
     	echo "INSTANCE $basename"
@@ -23,11 +27,10 @@ for f in ../Instances/*json; do
     	echo "LENGTH SmithNewSort    $smithNewSortLen"
 	    echo "LENGTH Simple          $simpleLen"
 	    echo "LENGTH SimpleSort      $simpleSortLen"
-    	echo "DIFFGEO GeoSteiner     $diffGeosteiner"
-	    echo "DIFFGEO SmithNew       $diffSmithNew"
-	    echo "DIFFGEO SmithNewSort   $diffSmithNewSort"
-    	echo "DIFFGEO Simple         $diffSimple"
-    	echo "DIFFGEO SimpleSort     $diffSimpleSort"
+	    echo "DIFFGEO SmithNew       $diffSmithNew / $ratioSmithNew"
+	    echo "DIFFGEO SmithNewSort   $diffSmithNewSort / $ratioSmithNewSort"
+    	echo "DIFFGEO Simple         $diffSimple / $ratioSimple"
+    	echo "DIFFGEO SimpleSort     $diffSimpleSort / $ratioSimpleSort"
     	echo ""
 	fi
 done
