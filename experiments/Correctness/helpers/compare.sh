@@ -9,16 +9,16 @@ for f in ../Instances/*json; do
 	simpleLen=`grep -A 1 Length ../Simple/$basename | tail -n 1 | sed 's/\t/ /g' | tr -s ' ' | cut -d ' ' -f 2 | cut -c 1-9`
 	simpleSortLen=`grep -A 1 Length ../SimpleSort/$basename | tail -n 1 | sed 's/\t/ /g' | tr -s ' ' | cut -d ' ' -f 2 | cut -c 1-9`
 
-	diffSmithNew=$(qalc -t $smithNewLen - $geosteinerLen)
-	diffSmithNewSort=$(qalc -t $smithNewSortLen - $geosteinerLen)
-	diffSimple=$(qalc -t $simpleLen - $geosteinerLen)
-	diffSimpleSort=$(qalc -t $simpleSortLen - $geosteinerLen)
-	diff=$(qalc -t "$diffGeosteiner + $diffSmithNew + $diffSmithNewSort + $diffSimple + $diffSimpleSort >= 0.00001")
+	diffSmithNew=$(bc -l <<< "$smithNewLen - $geosteinerLen")
+	diffSmithNewSort=$(bc -l <<< "$smithNewSortLen - $geosteinerLen")
+	diffSimple=$(bc -l <<< "$simpleLen - $geosteinerLen")
+	diffSimpleSort=$(bc -l <<< "$simpleSortLen - $geosteinerLen")
+	diff=$(bc -l <<< "($diffSmithNew + $diffSmithNewSort + $diffSimple + $diffSimpleSort) >= 0.00001")
 
-	ratioSmithNew=$(qalc -t $diffSmithNew/$geosteinerLen*100)
-	ratioSmithNewSort=$(qalc -t $diffSmithNewSort/$geosteinerLen*100)
-	ratioSimple=$(qalc -t $diffSimple/$geosteinerLen*100)
-	ratioSimpleSort=$(qalc -t $diffSimpleSort/$geosteinerLen*100)
+	ratioSmithNew=$(bc -l <<< "$diffSmithNew/$geosteinerLen*100")
+	ratioSmithNewSort=$(bc -l <<< "$diffSmithNewSort/$geosteinerLen*100")
+	ratioSimple=$(bc -l <<< "$diffSimple/$geosteinerLen*100")
+	ratioSimpleSort=$(bc -l <<< "$diffSimpleSort/$geosteinerLen*100")
 
 	if [ $diff -eq 1 ]; then
     	echo "INSTANCE $basename"
