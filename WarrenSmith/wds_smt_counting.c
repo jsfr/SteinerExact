@@ -192,7 +192,8 @@ output_tree()
 
 main() { /* Inputs NUMSITES, DIMENSION, sites; outputs succesive best Steiner
 	  * trees found. Best tree's topology-vector is stored in BESTVEC. */
-  int i, j, x, k, m, nc, ct, iterCount, treeCount, optimized;  REAL q, r; int A[NMAX];
+  int i, j, x, k, m, nc, ct, optimized;  REAL q, r; int A[NMAX];
+  long long iterCount, treeCount;
   INITRAND();
 
   /* (1) Input */
@@ -220,6 +221,9 @@ main() { /* Inputs NUMSITES, DIMENSION, sites; outputs succesive best Steiner
   printf("SCALE = %g\n", SCALE);
   fflush(stdout);
 
+  treeCount = 0;
+  iterCount = 0;
+
   if (NUMSITES == 3) { /* Deal with special case of 3 sites */
     buildtree(0, A);
     q = length(); r = error();
@@ -238,9 +242,6 @@ main() { /* Inputs NUMSITES, DIMENSION, sites; outputs succesive best Steiner
   /* Optionally, sort sites in some nice order here. */
   /* STUB = any upper bound ont the length of the SMT. */
   STUB = HUGE; k = 1; m = 0; ct = 0; /*  ct counts backtrack iters. Unused at present */
-
-  treeCount = 0;
-  iterCount = 0;
 
   DoForever{ /* 3: candidate leaf generation and backtracking */
     nc = 0; ct++;
