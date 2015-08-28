@@ -1,25 +1,27 @@
 TARGETS = geosteiner simple smithnew simplesort smithnewsort
+MAKE = make
+MAKE_OPTS = -j 8
 
 all: $(TARGETS)
 
 simple:
-	cd Simple; make
+	cd Simple; $(MAKE) $(MAKE_OPTS)
 
 simplesort:
-	cd SimpleSort; make
+	cd SimpleSort; $(MAKE) $(MAKE_OPTS)
 
 geosteiner:
-	cd GeoSteiner; make
+	cd GeoSteiner; $(MAKE)
 
 smithnew:
-	cd SmithNew; make
+	cd SmithNew; $(MAKE) $(MAKE_OPTS)
 
 smithnewsort:
-	cd SmithNewSort; make
+	cd SmithNewSort; $(MAKE) $(MAKE_OPTS)
 
 clean:
-	cd Simple; make clean
-	cd SimpleSort; make clean
-	cd GeoSteiner; make clean
-	cd SmithNew; make clean
-	cd SmithNewSort; make clean
+	cd Simple; $(MAKE) clean
+	cd SimpleSort; $(MAKE) clean
+	cd GeoSteiner; $(MAKE) clean
+	cd SmithNew; $(MAKE) clean
+	cd SmithNewSort; $(MAKE) clean
