@@ -44,9 +44,9 @@ def plot_boxplot_time(data, setName, methods, suffix, dim=2):
 
     for pdict in plotdata:
 
-        offset = 0.25 * (plotdata.index(pdict)-(len(plotdata)-1)/2.0)
+        offset = 0.16 * (plotdata.index(pdict)-(len(plotdata)-1)/2.0)
         pos = [ x+offset for x in ns ]
-        bp = plt.boxplot(pdict['results'], widths=0.21, positions = pos )
+        bp = plt.boxplot(pdict['results'], widths=0.13, positions = pos )
         plt.setp(bp['boxes'], color=pdict['color'])
         plt.setp(bp['whiskers'], color=pdict['color'], linestyle='solid')
         plt.setp(bp['fliers'], color=pdict['color'], marker='+')
@@ -104,25 +104,26 @@ def plot_boxplot_time(data, setName, methods, suffix, dim=2):
     plt.ylim(0.01,100000)
     plt.savefig("/home/jens/repos/masters-report/report/gfx/boxplots/plot_nvst_boxplot_d"+str(dim)+"_"+setName+"_"+suffix+".pdf")
 
-def plot_boxplot_trees(data, setName, methods, suffix, dim=2):
+def plot_boxplot_time_2(data, setName, methods, suffix, terminals=10):
+    cutoff_time = 12*60*60
 
     #Convert data
-    plotdata = [{'method': m, 'd': dim, 'color':c, 'fill': f} for (m,c,f) in methods]
+    plotdata = [{'method': m, 'n': terminals, 'color':c, 'fill': f} for (m,c,f) in methods]
 
     for pdict in plotdata:
         #Store times
-        tmp = [ (dic['n'], dic['results']['trees']['data']) for dic in data if
+        tmp = [ (dic['d'], dic['results']['times']['data']) for dic in data if
                 dic['method']==pdict['method'] and
-                dic['d']==pdict['d'] ]
+                dic['n']==pdict['n'] ]
         tmp.sort(key=lambda x: x[0])
         tmp = [x[1] for x in tmp ]
 
         pdict['results'] = tmp
 
         #Store succ's
-        tmp = [ (dic['n'], dic['results']['succ']) for dic in data if
+        tmp = [ (dic['d'], dic['results']['succ']) for dic in data if
                 dic['method']==pdict['method'] and
-                dic['d']==pdict['d'] ]
+                dic['n']==pdict['n'] ]
         tmp.sort(key=lambda x: x[0])
         tmp = [x[1] for x in tmp ]
 
@@ -140,14 +141,14 @@ def plot_boxplot_trees(data, setName, methods, suffix, dim=2):
     ax1.set_axisbelow(True)
 
 
-    ns = list(set([dic['n'] for dic in data]))
+    ns = list(set([dic['d'] for dic in data]))
     ns.sort()
 
     for pdict in plotdata:
 
-        offset = 0.25 * (plotdata.index(pdict)-(len(plotdata)-1)/2.0)
+        offset = 0.16 * (plotdata.index(pdict)-(len(plotdata)-1)/2.0)
         pos = [ x+offset for x in ns ]
-        bp = plt.boxplot(pdict['results'], widths=0.21, positions = pos )
+        bp = plt.boxplot(pdict['results'], widths=0.13, positions = pos )
         plt.setp(bp['boxes'], color=pdict['color'])
         plt.setp(bp['whiskers'], color=pdict['color'], linestyle='solid')
         plt.setp(bp['fliers'], color=pdict['color'], marker='+')
@@ -176,10 +177,16 @@ def plot_boxplot_trees(data, setName, methods, suffix, dim=2):
     ax1.set_xticks(ns)
     ax1.set_xticklabels(ns)
 
+    #Horizontal line at cutoff time (12hours)
+    plt.plot([0,20],[cutoff_time,cutoff_time], color='#a93030', linestyle='dashed' )
+
     #Hack to add legend
     handles = []
     labels  = []
     methodNames = [x[0] for x in methods]
+    p, = plt.plot([1,1], linestyle='dashed', color='#a93030')
+    handles.append(p)
+    labels.append("Stop time")
     for pdict in plotdata:
         p, = plt.plot([1,1],linewidth=8.0, linestyle='-', color=pdict['fill'])
         handles.append(p)
@@ -189,15 +196,15 @@ def plot_boxplot_trees(data, setName, methods, suffix, dim=2):
         p.set_visible(False)
 
     #Axis labels
-    plt.xlabel("Number of terminals")
-    plt.ylabel("Number of trees")
+    plt.xlabel("Number of dimensions")
+    plt.ylabel("CPU-time (s)")
 
     #Title
-    plt.title(setName+" (d = "+str(dim)+")")
+    plt.title(setName+" (n = "+str(terminals)+")")
 
     plt.xlim(min(ns)-1.3, max(ns)+0.7)
-    plt.ylim(100,1000000000)
-    plt.savefig("/home/jens/repos/masters-report/report/gfx/boxplots/plot_nvst_boxplot_trees_d"+str(dim)+"_"+setName+"_"+suffix+".pdf")
+    plt.ylim(0.01,100000)
+    plt.savefig("/home/jens/repos/masters-report/report/gfx/boxplots/plot_nvst_boxplot_n"+str(terminals)+"_"+setName+"_"+suffix+".pdf")
 
 methods = [
     ("SmithOld",     "#004400", "#55aa55"),
@@ -207,22 +214,13 @@ methods = [
     ("SimpleSort",   "#554600", "#d4c26a")
 ]
 
-# data = collectCube([x[0] for x in methods if "Sort" not in x[0]])
-# for d in [3, 4]:
-#     plot = plot_boxplot_time(data, "Cube", [x for x in methods if "Sort" not in x[0]], "1", dim=d)
+data = collectCube([x[0] for x in methods])
+for d in range(3,5):
+    plot = plot_boxplot_time(data, "Cube", methods, "1", dim=d)
 
-# data = collectCarioca([x[0] for x in methods if "Sort" not in x[0]])
-# for d in [3, 4]:
-#     plot = plot_boxplot_time(data, "Carioca", [x for x in methods if "Sort" not in x[0]], "1", dim=d)
+data = collectCarioca([x[0] for x in methods])
+for d in range(3,5):
+    plot = plot_boxplot_time(data, "Carioca", methods, "1", dim=d)
 
-# data = collectCube([x[0] for x in methods if "SmithNew" in x[0]])
-# for d in [3, 4]:
-#     plot = plot_boxplot_time(data, "Cube", [x for x in methods if "SmithNew" in x[0]], "2", dim=d)
-
-# data = collectCube([x[0] for x in methods if "Simple" in x[0]])
-# for d in [3, 4]:
-#     plot = plot_boxplot_time(data, "Cube", [x for x in methods if "Simple" in x[0]], "3", dim=d)
-
-data = collectCube([x[0] for x in methods if "Sort" not in x[0]])
-for d in [3, 4]:
-    plot = plot_boxplot_trees(data, "Cube", [x for x in methods if "Sort" not in x[0]], "1", dim=d)
+data = collectIowa([x[0] for x in methods])
+plot = plot_boxplot_time_2(data, "Iowa", methods, "1", terminals=10)
