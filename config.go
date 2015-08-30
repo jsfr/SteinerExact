@@ -10,7 +10,6 @@ import (
 
 type config struct {
 	Points     smt.Points
-	MaxThreads bool
 	Offset     bool
 	CPUProfile string
 	SortPoints bool
@@ -27,9 +26,6 @@ func initConfig() config {
 	c := config{}
 
 	// Specifiy any flags here
-	maxThreads := flag.Bool("maxThreads", false,
-		"Sets GOMAXPROCS to the number of CPUs available."+
-			" Otherwise it will be set to the default which is 1")
 	offset := flag.Bool("1", false,
 		"If enabled will 1-index printed points, topology vectors etc.")
 	cpuprofile := flag.String("cpuprofile", "",
@@ -69,7 +65,6 @@ func initConfig() config {
 
 	}
 
-	c.MaxThreads = *maxThreads
 	c.Offset = *offset
 	c.CPUProfile = *cpuprofile
 	c.SortPoints = *sort

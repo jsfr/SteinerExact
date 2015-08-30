@@ -66,7 +66,7 @@ def plot_boxplot_time(data, setName, methods, suffix, dim=2):
         #Draw number of succesfully completed runs
         for n in ns:
             i = ns.index(n)
-            ax1.text(pos[i]-0.05, 0.02, str(pdict['succ'][i]), fontsize=10)
+            ax1.text(pos[i]-0.05, 0.02, str(pdict['succ'][i]), fontsize=8)
 
     #Succesful label
     ax1.text(min(ns)-1.27, 0.02, "Completed:", fontsize=10)

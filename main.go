@@ -6,7 +6,6 @@ import (
 	"log"
 	"math"
 	"os"
-	"runtime"
 	"runtime/pprof"
 
 	"github.com/jsfr/SteinerExact/smt"
@@ -14,10 +13,6 @@ import (
 
 func main() {
 	c := initConfig()
-
-	if c.MaxThreads {
-		runtime.GOMAXPROCS(runtime.NumCPU())
-	}
 
 	offset := 0
 	if c.Offset {
