@@ -1,0 +1,2 @@
+trees: 500
+iterations: 19710

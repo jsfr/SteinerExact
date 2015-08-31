@@ -1,6 +1,7 @@
 package smt
 
 import "math"
+import "math/rand"
 
 // Tree is defined as the following: It contains all N regular points, as the
 // first N entries, and all N-2 Steiner points, as the N+1..2N-2 entries. The
@@ -91,7 +92,10 @@ func InitTree(points *Points) *Tree {
 
 	t.points = make(Points, 0, 2*t.n-2)
 	t.points = append(t.points, *points...)
-	s := pertubedCentroid(0, 1, 2, &t)
+	s := fermatTorricelliPoint(0, 1, 2, &t)
+	for i := range s {
+		s[i] = s[i] + 1e-3*rand.Float64()
+	}
 	t.points = append(t.points, s)
 
 	e0 := InitEdge(&t, 0, t.n)
@@ -123,7 +127,10 @@ func (t *Tree) Sprout(edgeIdx int) {
 
 	// Get the new Steiner point and its number,
 	// and append it to the point list
-	s := pertubedCentroid(p0, p1, p2, t)
+	s := fermatTorricelliPoint(p0, p1, p2, t)
+	for i := range s {
+		s[i] = s[i] + 1e-3*rand.Float64()
+	}
 	sIdx := len(t.points)
 	t.points = append(t.points, s)
 
